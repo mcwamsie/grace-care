@@ -14,14 +14,19 @@ services:
     ports:
       - "5085:5085"
     volumes:
+      - .:/app
       - ./nginx:/etc/nginx/conf.d
+      - static_volume:/app/staticfiles
+      - media_volume:/app/mediafiles
     networks:
       - web_network
-    depends_on: 
+    depends_on:
       - appseed-app
+volumes:
+  static_volume:
+  media_volume:
 networks:
   db_network:
     driver: bridge
   web_network:
     driver: bridge
- 

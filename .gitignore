@@ -13,4 +13,17 @@ env
 *.sqlite*
 
 .env
+package-lock.json
 yarn.lock
+
+mediafiles/
+
+
+**/migrations/**
+!**/migrations
+!**/migrations/__init__.py
+
+# Only for Development only
+**/__pycache__/**
+!**/__pycache__
+!**/__pycache__/__init__.py
