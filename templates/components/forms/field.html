@@ -1,0 +1,38 @@
+{% load form_filters %}
+{% load widget_tweaks %}
+<div class="flex flex-col gap-1 {{ css_classes }}">
+
+    {% if field.field.widget|is_checkbox %}
+        <label class="flex gap-1 items-center">
+            <input type="checkbox" name="{{ field.name }}" id="{{ field.id_for_label }}"
+                   {% if field.value %}checked{% endif %}>
+            <span>{{ field.label }}</span>
+        </label>
+
+    {% else %}
+        {% if field.field.required %}
+            <label for="{{ field.id_for_label }}" class="inline-block font-medium peer-invalid:text-red-500">
+                {{ field.label }} <span class="text-xs text-red-500 ">*</span>
+            </label>
+        {% else %}
+            <label for="{{ field.id_for_label }}" class="inline-block peer-invalid:text-red-500">
+                {{ field.label }}
+            </label>
+        {% endif %}
+        {% if field.field.widget|is_textarea %}
+            {% render_field field class+=" peer block appearance-none border border-border w-full h-auto px-3 text-gray-700 leading-tight focus:ring-active-500 focus:outline-none focus:shadow-outline" %}
+        {% elif field.field.widget|is_select_multiple %}
+            {{ field }}
+            {#            {% render_field field class+=" peer block appearance-none border border-border w-full h-auto px-3 text-gray-700 leading-tight focus:ring-active-500 focus:outline-none focus:shadow-outline" %}#}
+        {% elif field.field.widget|is_select %}
+            {{ field }}
+            {#            {% render_field field class+=" peer block appearance-none border border-border w-full h-auto px-3 text-gray-700 leading-tight focus:ring-active-500 focus:outline-none focus:shadow-outline" %}#}
+        {% else %}
+            {% render_field field class+=" peer block appearance-none border border-border w-full h-9 px-3 py-1 text-gray-700 leading-tight focus:ring-active-500 focus:outline-none focus:shadow-outline" %}
+        {% endif %}
+    {% endif %}
+
+    {% if field.errors %}
+        <span class="text-red-500">{{ field.errors }}</span>
+    {% endif %}
+</div>

@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 import os, random, string
 from pathlib import Path
+
+import dj_database_url
 from dotenv import load_dotenv
 
 load_dotenv()  # take environment variables from .env.
@@ -51,7 +53,17 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
+    "simple_history",
+    "sequences",
+    "import_export",
+    "active_link",
+
     "phonenumber_field",
+    "django_htmx",
+    "mathfilters",
+    "widget_tweaks",
+
     "home",
 ]
 
@@ -98,17 +110,13 @@ DB_PASS = os.getenv('DB_PASS', None)
 DB_HOST = os.getenv('DB_HOST', None)
 DB_PORT = os.getenv('DB_PORT', None)
 DB_NAME = os.getenv('DB_NAME', None)
+DATABASE_URL = os.getenv('DATABASE_URL', None)
 
-if DB_ENGINE and DB_NAME and DB_USERNAME:
+if DATABASE_URL:
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.' + DB_ENGINE,
-            'NAME': DB_NAME,
-            'USER': DB_USERNAME,
-            'PASSWORD': DB_PASS,
-            'HOST': DB_HOST,
-            'PORT': DB_PORT,
-        },
+        'default': dj_database_url.config(
+            default=DATABASE_URL
+        )
     }
 else:
     DATABASES = {

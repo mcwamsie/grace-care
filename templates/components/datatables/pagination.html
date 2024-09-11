@@ -1,0 +1,78 @@
+{% load urlparams %}
+<nav
+        class="flex border-border border flex-col sm:flex-row justify-between items-center  space-y-3 sm:space-y-0 p-2.5"
+        aria-label="Table navigation">
+                <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
+                    Showing
+                    <span class="font-semibold text-gray-900 dark:text-white">
+                        {{ page_obj.start_index }}-{{ page_obj.end_index }}</span>
+                    of
+                    <span class="font-semibold text-gray-900 dark:text-white">
+                      {{ total }}
+                    </span>
+                </span>
+    <ul class="inline-flex items-stretch -space-x-px">
+        <li>
+            {% if page_obj.has_previous %}
+                <a href="{% url_params_add page=page_obj.previous_page_number %}"
+                   class="pagination-item">
+                    <span class="sr-only">Previous</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         class="w-4 h-4">
+                        <path d="m15 18-6-6 6-6"></path>
+                    </svg>
+                </a>
+            {% else %}
+                <button type="button" disabled class="pagination-item">
+                    <span class="sr-only">Previous</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         class="w-4 h-4">
+                        <path d="m15 18-6-6 6-6"></path>
+                    </svg>
+                </button>
+            {% endif %}
+        </li>
+
+        {% for page in page_obj.paginator.page_range %}
+            {% if page == page_obj.number %}
+                <li>
+                    <button aria-current="page" disabled class="pagination-item !bg-blue-700 !text-neutral-50">
+                        {{ page }}
+                    </button>
+                </li>
+            {% else %}
+                <li>
+                    <a href="{% url_params_add page=page %}" type="button" class="pagination-item">
+                        {{ page }}
+                    </a>
+                </li>
+            {% endif %}
+
+        {% endfor %}
+
+        <li>
+            {% if page_obj.has_next %}
+                <a href="{% url_params_add page=page_obj.next_page_number %}"
+                   class="pagination-item">
+                    <span class="sr-only">Next</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         class="h-4 w-4">
+                        <path d="m9 18 6-6-6-6"></path>
+                    </svg>
+                </a>
+            {% else %}
+                <button type="button" disabled class="pagination-item">
+                    <span class="sr-only">Next</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         class="h-4 w-4">
+                        <path d="m9 18 6-6-6-6"></path>
+                    </svg>
+                </button>
+            {% endif %}
+        </li>
+    </ul>
+</nav>
