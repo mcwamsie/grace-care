@@ -13,6 +13,7 @@ class Church(models.Model):
     monthlySubscriptionFee = models.DecimalField(default=0, decimal_places=2, max_digits=11,
                                                  verbose_name="Monthly Subscription Fee")
     date_joined = models.DateTimeField(default=timezone.now)
+
     def __str__(self):
         return self.name
 
@@ -129,9 +130,11 @@ class MonthlySubscription(models.Model):
 
 
 CURRENCY_CHOICES = [
-        ("$", "USD"),
-        ("Z$", "ZWG")
-    ]
+    ("$", "USD"),
+    ("Z$", "ZWG")
+]
+
+
 class PaymentMethod(models.Model):
     church = models.ForeignKey(Church, related_name='payment_methods', on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
@@ -141,11 +144,16 @@ class PaymentMethod(models.Model):
     available_balance = models.DecimalField(default=0, decimal_places=2, max_digits=11,
                                             verbose_name="Available_Balance")
     total_balance = models.DecimalField(default=0, decimal_places=2, max_digits=11, verbose_name="Total Balance")
-    accountNumber = models.CharField(max_length=100, verbose_name="Account Number")
+    accountNumber = models.CharField(max_length=100, blank=True, null=True, verbose_name="Account Number")
     active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        unique_together = [("church", "name")]
+        verbose_name = "Payment Method"
+        verbose_name_plural = "Payment Methods"
 
 
 class Payment(models.Model):

@@ -149,8 +149,10 @@ class AssemblyForm(forms.ModelForm):
             "location": forms.Textarea(attrs={"rows": 3})
         }
 
+
 class PaymentMethodForm(forms.ModelForm):
-    initial_balance = forms.DecimalField(max_digits=11, min_value=0, decimal_places=2,label="Initial Balance")
+    initial_balance = forms.DecimalField(max_digits=11, min_value=0, decimal_places=2, label="Initial Balance")
+
     class Meta:
         model = PaymentMethod
         exclude = ["total_balance", "available_balance"]

@@ -1986,10 +1986,6 @@ th, td {
   width: 40%;
 }
 
-.w-28 {
-  width: 7rem;
-}
-
 .w-3 {
   width: 0.75rem;
 }
@@ -2066,6 +2062,10 @@ th, td {
   width: 2.25rem;
 }
 
+.w-\[1px\] {
+  width: 1px;
+}
+
 .w-\[60px\] {
   width: 60px;
 }
@@ -2076,10 +2076,6 @@ th, td {
 
 .w-full {
   width: 100%;
-}
-
-.w-\[1px\] {
-  width: 1px;
 }
 
 .min-w-0 {
@@ -2287,16 +2283,12 @@ th, td {
   grid-template-columns: 120px auto;
 }
 
-.grid-cols-\[10px_auto\] {
-  grid-template-columns: 10px auto;
-}
-
-.grid-cols-\[140px_auto\] {
-  grid-template-columns: 140px auto;
-}
-
 .grid-cols-\[160px_auto\] {
   grid-template-columns: 160px auto;
+}
+
+.grid-cols-\[180px_auto\] {
+  grid-template-columns: 180px auto;
 }
 
 .flex-row {
@@ -2460,6 +2452,10 @@ th, td {
 
 .whitespace-nowrap {
   white-space: nowrap;
+}
+
+.whitespace-pre-wrap {
+  white-space: pre-wrap;
 }
 
 .break-words {
@@ -2745,6 +2741,11 @@ th, td {
 .bg-blue-900 {
   --tw-bg-opacity: 1;
   background-color: rgb(35 56 118 / var(--tw-bg-opacity));
+}
+
+.bg-border {
+  --tw-bg-opacity: 1;
+  background-color: rgb(184 184 184 / var(--tw-bg-opacity));
 }
 
 .bg-cyan-500 {
@@ -3117,16 +3118,6 @@ th, td {
 
 .bg-zinc-700\/10 {
   background-color: rgb(63 63 70 / 0.1);
-}
-
-.bg-border {
-  --tw-bg-opacity: 1;
-  background-color: rgb(184 184 184 / var(--tw-bg-opacity));
-}
-
-.bg-yellow-200 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(252 233 106 / var(--tw-bg-opacity));
 }
 
 .bg-\[url\(\'https\:\/\/raw\.githubusercontent\.com\/creativetimofficial\/public-assets\/master\/argon-dashboard-pro\/assets\/img\/profile-layout-header\.jpg\'\)\] {
@@ -3680,10 +3671,6 @@ th, td {
   line-height: 1rem;
 }
 
-.text-xsmall {
-  font-size: 10px;
-}
-
 .font-bold {
   font-weight: 700;
 }
@@ -3710,11 +3697,6 @@ th, td {
 
 .capitalize {
   text-transform: capitalize;
-}
-
-.ordinal {
-  --tw-ordinal: ordinal;
-  font-variant-numeric: var(--tw-ordinal) var(--tw-slashed-zero) var(--tw-numeric-figure) var(--tw-numeric-spacing) var(--tw-numeric-fraction);
 }
 
 .leading-6 {
@@ -3889,11 +3871,6 @@ th, td {
 
 .text-white\/80 {
   color: rgb(255 255 255 / 0.8);
-}
-
-.text-yellow-700 {
-  --tw-text-opacity: 1;
-  color: rgb(142 75 16 / var(--tw-text-opacity));
 }
 
 .no-underline {
@@ -4624,11 +4601,6 @@ th, td {
   background-color: rgb(255 255 255 / 0.1);
 }
 
-.hover\:bg-blue-700:hover {
-  --tw-bg-opacity: 1;
-  background-color: rgb(26 86 219 / var(--tw-bg-opacity));
-}
-
 .hover\:text-blue-500:hover {
   --tw-text-opacity: 1;
   color: rgb(63 131 248 / var(--tw-text-opacity));
@@ -4762,11 +4734,6 @@ th, td {
 .focus\:ring-red-800:focus {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(155 28 28 / var(--tw-ring-opacity));
-}
-
-.focus\:ring-blue-700:focus {
-  --tw-ring-opacity: 1;
-  --tw-ring-color: rgb(26 86 219 / var(--tw-ring-opacity));
 }
 
 .focus\:ring-offset-2:focus {

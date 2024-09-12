@@ -5,7 +5,7 @@ from home.views import HomeView, MemberListView, EditMemberView, NewMemberView, 
     UserRegistration, UserPasswordChangeView, \
     FundraisingProjectListView, NewFundraisingProjectView, EditFundraisingProjectView, \
     UserPasswordResetView, UserPasswordResetConfirmView, billing, DashboardView, send_test_email, AssemblyListView, \
-    NewAssemblyView, EditAssemblyView, PaymentMethodListView, NewPaymentMethodView
+    NewAssemblyView, EditAssemblyView, PaymentMethodListView, NewPaymentMethodView, EditPaymentMethodView
 
 urlpatterns = [
     path('test/', send_test_email, name='test'),
@@ -31,7 +31,7 @@ urlpatterns = [
     # Fundraising Projects
     path('payment-methods/', PaymentMethodListView.as_view(), name='methods_list'),
     path('payment-methods/new/', NewPaymentMethodView.as_view(), name='methods_add'),
-    path('payment-methods/update/<int:pk>/', EditFundraisingProjectView.as_view(), name='methods_update'),
+    path('payment-methods/update/<int:pk>/', EditPaymentMethodView.as_view(), name='methods_update'),
 
     # Authentication
     path('accounts/login/', UserLoginView.as_view(), name='login'),

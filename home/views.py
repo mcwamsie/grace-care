@@ -122,7 +122,6 @@ class UserPasswordChangeView(PasswordChangeView):
     form_class = UserPasswordChangeForm
 
 
-
 # ==================== Assemblies ================
 
 class AssemblyListView(AccessRequiredMixin, ListView, SearchFilter):
@@ -148,6 +147,7 @@ class AssemblyListView(AccessRequiredMixin, ListView, SearchFilter):
         context["form"] = AssemblyForm(initial={"active": True, "church": self.request.user.assembly.church})
         return context
 
+
 class NewAssemblyView(AccessRequiredMixin, CreateView):
     model = Member
     form_class = AssemblyForm
@@ -166,6 +166,7 @@ class NewAssemblyView(AccessRequiredMixin, CreateView):
         else:
             print("errors", form.errors)
             return self.render_to_response(context={"form": form})
+
 
 class EditAssemblyView(AccessRequiredMixin, UpdateView):
     model = Assembly
@@ -193,6 +194,7 @@ class EditAssemblyView(AccessRequiredMixin, UpdateView):
             print("errors", form.errors)
             return render(request, 'partials/assemblies/edit/modals/update.form.html',
                           {'form': form, 'object': assembly})
+
 
 #==================== End Assemblies ==============
 # ==================== Members ====================
@@ -280,6 +282,7 @@ class EditMemberView(AccessRequiredMixin, UpdateView):
             return render(request, 'partials/members/edit/modals/update.form.html',
                           {'form': form, 'object': member})
 
+
 #==================== End Members ==================
 # =================== Fundraising Projects ==========
 
@@ -306,6 +309,7 @@ class FundraisingProjectListView(AccessRequiredMixin, ListView, SearchFilter):
         context["form"] = FundraisingProjectForm(initial={"active": True, "church": self.request.user.assembly.church})
         return context
 
+
 class NewFundraisingProjectView(AccessRequiredMixin, CreateView):
     model = FundraisingProject
     form_class = FundraisingProjectForm
@@ -324,6 +328,7 @@ class NewFundraisingProjectView(AccessRequiredMixin, CreateView):
         else:
             print("errors", form.errors)
             return self.render_to_response(context={"form": form})
+
 
 class EditFundraisingProjectView(AccessRequiredMixin, UpdateView):
     model = FundraisingProject
@@ -351,6 +356,8 @@ class EditFundraisingProjectView(AccessRequiredMixin, UpdateView):
             print("errors", form.errors)
             return render(request, 'partials/projects/edit/modals/update.form.html',
                           {'form': form, 'object': project})
+
+
 #==================== End Fundraising Projects======
 # =================== Payment Methods ==========
 
@@ -377,6 +384,7 @@ class PaymentMethodListView(AccessRequiredMixin, ListView, SearchFilter):
         context["form"] = PaymentMethodForm(initial={"active": True, "church": self.request.user.assembly.church})
         return context
 
+
 class NewPaymentMethodView(AccessRequiredMixin, CreateView):
     model = PaymentMethod
     form_class = PaymentMethodForm
@@ -386,15 +394,20 @@ class NewPaymentMethodView(AccessRequiredMixin, CreateView):
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST, request.FILES)
         if form.is_valid():
-            method = form.save(commit=True)
-            messages.success(request, self.model._meta.verbose_name+" has been successfully created")
-            url = reverse("projects_update", kwargs={"pk": method.id})
+            method = form.save(commit=False)
+            initial_balance = form.cleaned_data["initial_balance"]
+            method.available_balance = initial_balance
+            method.total_balance = initial_balance
+            method.save()
+            messages.success(request, self.model._meta.verbose_name + " has been successfully created")
+            url = reverse("methods_update", kwargs={"pk": method.id})
             response = render(request, "components/misc/redirect.html", {"url": url})
             response["HX-Retarget"] = "#success-url"
             return response
         else:
             print("errors", form.errors)
             return self.render_to_response(context={"form": form})
+
 
 class EditPaymentMethodView(AccessRequiredMixin, UpdateView):
     model = PaymentMethod
@@ -404,7 +417,7 @@ class EditPaymentMethodView(AccessRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["form"] = self.form_class(instance=self.object)
+        context["form"] = self.form_class(instance=self.object, initial={"initial_balance": 0})
         return context
 
     def post(self, request, *args, **kwargs):
@@ -413,8 +426,8 @@ class EditPaymentMethodView(AccessRequiredMixin, UpdateView):
 
         if form.is_valid():
             method = form.save(commit=True)
-            messages.success(request, self.model._meta.verbose_name+" has been successfully updated")
-            url = reverse("projects_update", kwargs={"pk": method.id})
+            messages.success(request, self.model._meta.verbose_name + " has been successfully updated")
+            url = reverse("methods_update", kwargs={"pk": method.id})
             response = render(request, "components/misc/redirect.html", {"url": url})
             response["HX-Retarget"] = "#success-url"
             return response
@@ -422,6 +435,7 @@ class EditPaymentMethodView(AccessRequiredMixin, UpdateView):
             print("errors", form.errors)
             return render(request, 'partials/methods/edit/modals/update.form.html',
                           {'form': form, 'object': method})
+
 
 def send_test_email(request):
     subject = 'Test Email'

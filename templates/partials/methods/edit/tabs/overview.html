@@ -25,8 +25,24 @@
     </div>
     <div class="grid grid-cols-1 gap-6">
         <div class="flex flex-col gap-4">
-            <h4 class="text-large font-bold">Assembly information</h4>
-            <div class="grid grid-cols-[160px_auto] gap-1 items-start">
+            <h4 class="text-large font-bold">Payment Method information</h4>
+            {% if object.accountNumber %}
+            	<div class="grid grid-cols-[180px_auto] gap-1 items-start">
+            <span class="font-semibold text-gray-500 flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"  class="h-4 w-4">
+                    <line x1="4" x2="20" y1="9" y2="9"></line>
+                    <line x1="4" x2="20" y1="15" y2="15"></line>
+                    <line x1="10" x2="8" y1="3" y2="21"></line>
+                    <line x1="16" x2="14" y1="3" y2="21"></line>
+                </svg>
+                <span>Account Number:</span>
+                </span>
+                <div>
+                    {{ object.accountNumber | upper }}
+                </div>
+            </div>
+            {% endif %} 
+            <div class="grid grid-cols-[180px_auto] gap-1 items-start">
             <span class="font-semibold text-gray-500 flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -36,13 +52,33 @@
                     <rect width="18" height="18" x="3" y="4" rx="2"></rect>
                     <path d="M3 10h18"></path>
                 </svg>
-                <span>Start Date:</span>
+                <span>Incoming Payments:</span>
                 </span>
                 <div>
-                    {{ object.start_date | date:"d M, Y" }}
+                      {% if object.incoming_payments %}
+                        <span class="h-4 w-4 inline-flex items-center justify-center rounded-full text-neutral-50 bg-green-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                             class="w-3 h-3">
+                            <path d="M21.801 10A10 10 0 1 1 17 3.335"></path>
+                            <path d="m9 11 3 3L22 4"></path>
+                        </svg>
+                        </span>
+                    {% else %}
+                        <span class="h-4 w-4 inline-flex items-center rounded-full justify-center text-neutral-50 bg-red-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                             class="h-3 w-3">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="m15 9-6 6"></path>
+                            <path d="m9 9 6 6"></path>
+                        </svg>
+                        </span>
+
+                    {% endif %}
                 </div>
             </div>
-            <div class="grid grid-cols-[160px_auto] gap-1 items-start">
+            <div class="grid grid-cols-[180px_auto] gap-1 items-start">
             <span class="font-semibold text-gray-500 flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -52,13 +88,34 @@
                     <rect width="18" height="18" x="3" y="4" rx="2"></rect>
                     <path d="M3 10h18"></path>
                 </svg>
-                <span>End Date:</span>
+                <span>Outgoing Payments:</span>
                 </span>
                 <div>
-                    {{ object.end_date | date:"d M, Y" }}
+                      {% if object.outgoing_payments %}
+                        <span class="h-4 w-4 inline-flex items-center justify-center rounded-full text-neutral-50 bg-green-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                             class="w-3 h-3">
+                            <path d="M21.801 10A10 10 0 1 1 17 3.335"></path>
+                            <path d="m9 11 3 3L22 4"></path>
+                        </svg>
+                        </span>
+                    {% else %}
+                        <span class="h-4 w-4 inline-flex items-center rounded-full justify-center text-neutral-50 bg-red-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                             class="h-3 w-3">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="m15 9-6 6"></path>
+                            <path d="m9 9 6 6"></path>
+                        </svg>
+                        </span>
+
+                    {% endif %}
                 </div>
             </div>
-            <div class="grid grid-cols-[160px_auto] gap-1 items-start">
+            
+            <div class="grid grid-cols-[180px_auto] gap-1 items-start">
             <span class="font-semibold text-gray-500 flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
                     <path d="M10 9h4"></path>
@@ -73,30 +130,30 @@
                     {{ object.church| title }}
                 </div>
             </div>
-            <div class="grid grid-cols-[160px_auto] gap-1 items-start">
+            <div class="grid grid-cols-[180px_auto] gap-1 items-start">
             <span class="font-semibold text-gray-500 flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
                     <path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2V5z"></path>
                     <path d="M2 9v1c0 1.1.9 2 2 2h1"></path>
                     <path d="M16 11h.01"></path>
                 </svg>
-                <span>Target:</span>
+                <span>Available Bal:</span>
                 </span>
                 <div>
-                    {{ object.currency }}{{ object.target_amount| floatformat:"2g" }}
+                    {{ object.currency }}{{ object.available_balance| floatformat:"2g" }}
                 </div>
             </div>
-            <div class="grid grid-cols-[160px_auto] gap-1 items-start">
+            <div class="grid grid-cols-[180px_auto] gap-1 items-start">
             <span class="font-semibold text-gray-500 flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
                     <path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2V5z"></path>
                     <path d="M2 9v1c0 1.1.9 2 2 2h1"></path>
                     <path d="M16 11h.01"></path>
                 </svg>
-                <span>Raised:</span>
+                <span>Total Bal:</span>
                 </span>
                 <div>
-                    {{ object.currency }}{{ object.raised_amount| floatformat:"2g" }}
+                    {{ object.currency }}{{ object.total_balance| floatformat:"2g" }}
                 </div>
             </div>
             

@@ -3,7 +3,7 @@
 	<form id="new-member-form"
       class="form flex flex-col gap-4"
       novalidate
-      hx-post="{% url "projects_add" %}"
+      hx-post="{% url "methods_add" %}"
       class="form"
       enctype="multipart/form-data"
       hx-target="#new-member-form-container"
@@ -14,12 +14,12 @@
 
     {% with WIDGET_ERROR_CLASS='border-red-500' %}
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {% include 'components/forms/field.html' with field=form.title css_classes="col-span-2" %}
-            {% include 'components/forms/field.html' with field=form.description css_classes="col-span-2" %}
-            {% include 'components/forms/field.html' with field=form.currency css_classes="col-span-1" %}
-            {% include 'components/forms/field.html' with field=form.target_amount css_classes="col-span-1" %}
-            {% include 'components/forms/field.html' with field=form.start_date css_classes="col-span-1" %}
-            {% include 'components/forms/field.html' with field=form.end_date css_classes="col-span-1" %}
+            {% include 'components/forms/field.html' with field=form.name css_classes="col-span-2" %}
+            {% include 'components/forms/field.html' with field=form.accountNumber css_classes="col-span-2" %}
+            {% include 'components/forms/field.html' with field=form.currency css_classes="col-span-2" %}
+            {% include 'components/forms/field.html' with field=form.incoming_payments css_classes="col-span-2" %}
+            {% include 'components/forms/field.html' with field=form.outgoing_payments css_classes="col-span-2" %}
+            {% include 'components/forms/field.html' with field=form.initial_balance css_classes="col-span-2" %}
             <div class="col-span-2">
                 {{ form.active.as_hidden }}
                 {{ form.church.as_hidden }}

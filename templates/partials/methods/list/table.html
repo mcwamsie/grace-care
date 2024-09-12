@@ -1,46 +1,96 @@
 {% if not object_list.count %}
-    {% include "components/misc/empty-state.html" with title="No Fundraising project records yet" %}
+    {% include "components/misc/empty-state.html" with title="No Payment method records yet" %}
 {% else %}
     <table class="w-full">
         <thead class="text-xs font-bold text-gray-700 uppercase">
         <tr class="sticky top-0 bg-paper">
-            <th scope="col">Title</th>
-            <th scope="col">Description</th>
-            <th scope="col">Target Amount</th>
-            <th scope="col">Raised Amount</th>
-            <th scope="col">Start Date</th>
-            <th scope="col">End Date</th>
+            <th scope="col">Name</th>
+            <th scope="col">Currency</th>
+            <th scope="col">Account Number</th>
+            <th scope="col">Available Balance</th>
+            <th scope="col">Total Balance</th>
+            <th scope="col">Outgoing Payments</th>
+            <th scope="col">Incoming Payments</th>
             <th scope="col">Active</th>
             <th scope="col"></th>
         </tr>
         </thead>
         <tbody>
-        {% for project in object_list %}
+        {% for method in object_list %}
             <tr class="bg-white border-b hover:bg-gray-50">
                 <th scope="row">
                     <div class="flex flex-col text-left">
                   <span class="font-bold text-gray-900">
-                    {{ project.title  | truncatechars:30| title }}
+                    {{ method.name  | truncatechars:30| title }}
                   </span>
                     </div>
                 </th>
                 <td class="text-left">
-                    {{ project.description | truncatechars:50| title }}
+                    {{ method.get_currency_display }}
+                </td>
+            {% if method.accountNumber %}
+            	<td class="text-left">
+                    {{ method.accountNumber }}
+                </td>
+                {% else %}
+                 <td class="text-center">-------</td>
+                
+            {% endif %} 
+                
+                <td class="text-right">
+                   {% spaceless %}{{ method.currency }}{{ method.available_balance | floatformat:"2g" }}{% endspaceless %}
                 </td>
                 <td class="text-right">
-                   {% spaceless %}{{ project.currency }}{{ project.target_amount | floatformat:"2g" }}{% endspaceless %}
-                </td>
-                <td class="text-right">
-                   {% spaceless %}{{ project.currency }}{{ project.raised_amount | floatformat:"2g" }}{% endspaceless %}
-                </td>
-                <td class="text-right">
-                   {% spaceless %}{{ project.start_date | date:"d, M, Y" }}{% endspaceless %}
-                </td>
-                <td class="text-right">
-                   {% spaceless %}{{ project.end_date | date:"d, M, Y" }}{% endspaceless %}
+                   {% spaceless %}{{ method.currency }}{{ method.total_balance | floatformat:"2g" }}{% endspaceless %}
                 </td>
                 <td class="text-center">
-                    {% if project.active %}
+                    {% if method.outgoing_payments %}
+                        <span class="h-4 w-4 inline-flex items-center justify-center rounded-full text-neutral-50 bg-green-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                             class="w-3 h-3">
+                            <path d="M21.801 10A10 10 0 1 1 17 3.335"></path>
+                            <path d="m9 11 3 3L22 4"></path>
+                        </svg>
+                        </span>
+                    {% else %}
+                        <span class="h-4 w-4 inline-flex items-center rounded-full justify-center text-neutral-50 bg-red-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                             class="h-3 w-3">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="m15 9-6 6"></path>
+                            <path d="m9 9 6 6"></path>
+                        </svg>
+                        </span>
+
+                    {% endif %}
+                </td>
+                <td class="text-center">
+                    {% if method.incoming_payments %}
+                        <span class="h-4 w-4 inline-flex items-center justify-center rounded-full text-neutral-50 bg-green-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                             class="w-3 h-3">
+                            <path d="M21.801 10A10 10 0 1 1 17 3.335"></path>
+                            <path d="m9 11 3 3L22 4"></path>
+                        </svg>
+                        </span>
+                    {% else %}
+                        <span class="h-4 w-4 inline-flex items-center rounded-full justify-center text-neutral-50 bg-red-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                             class="h-3 w-3">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="m15 9-6 6"></path>
+                            <path d="m9 9 6 6"></path>
+                        </svg>
+                        </span>
+
+                    {% endif %}
+                </td>
+                <td class="text-center">
+                    {% if method.active %}
                         <span class="h-4 w-4 inline-flex items-center justify-center rounded-full text-neutral-50 bg-green-500">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -63,7 +113,7 @@
                     {% endif %}
                 </td>
                 <td>
-                    <button data-dropdown-toggle="dropdownDots-{{ project.id }}"
+                    <button data-dropdown-toggle="dropdownDots-{{ method.id }}"
                             class="inline-flex items-center p-2 text-sm font-medium text-center text-gray-900 hover:bg-gray-100 focus:ring-4 focus:outline-none dark:text-white focus:ring-gray-50"
                             type="button">
                         <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -73,12 +123,12 @@
                         </svg>
                     </button>
 
-                    <div id="dropdownDots-{{ project.id }}"
+                    <div id="dropdownDots-{{ method.id }}"
                          class="z-10 hidden bg-white divide-y divide-gray-100 shadow w-60">
                         <ul class="py-2 text-sm text-blue-700"
                             aria-labelledby="dropdownMenuIconButton">
                             <li>
-                                <a href="{% url "projects_update" pk=project.id %}"
+                                <a href="{% url "methods_update" pk=method.id %}"
                                    class="flex items-center px-4 py-2 hover:bg-gray-100 gap-2">
                                     <svg class="w-4 h-4" aria-hidden="true"
                                          xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"

@@ -6,19 +6,18 @@ python -m pip install --upgrade pip
 
 pip install -r requirements.txt
 
-RUN mkdir -p /app/mediafiles
-RUN mkdir -p /app/db
+mkdir -p /app/mediafiles
+mkdir -p /app/db
 
 # Collect static files
-RUN python manage.py collectstatic --noinput
+python manage.py collectstatic --noinput
 
-RUN python manage.py makemigrations
+python manage.py makemigrations
 
 # running migrations
-RUN python manage.py migrate
+python manage.py migrate
 
-#
-RUN python manage.py createsuperadmin
+python manage.py createsuperadmin
 # compile SCSS
 yarn
 yarn build
