@@ -1,5 +1,8 @@
+{% load static %}
 <aside id="app-sidebar" class="fixed  top-0 left-0 z-40 w-60 h-screen transition-transform -translate-x-full lg:translate-x-0" aria-label="Sidebar">
-   <div class="h-full px-3 py-4 overflow-y-auto bg-blue-950 backdrop-blur-2xl backdrop-saturate-200">
+   <div class="h-full px-3 flex flex-col py-4 overflow-y-auto bg-blue-950 backdrop-blur-2xl backdrop-saturate-200">
+     <img class="h-10 rounded-full object-fill mb-6 object-center"
+                         src="{% static 'assets/img/logos/logo-long.png' %}" alt="user photo">
       <ul class="space-y-2 font-medium">
          <li>
             <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group">
