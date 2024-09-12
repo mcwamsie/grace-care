@@ -6,8 +6,8 @@ python -m pip install --upgrade pip
 
 pip install -r requirements.txt
 
-mkdir -p /app/mediafiles
-mkdir -p /app/db
+mkdir -p mediafiles
+mkdir -p db
 
 # Collect static files
 python manage.py collectstatic --noinput
