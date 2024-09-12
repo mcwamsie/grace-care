@@ -1,0 +1,10 @@
+{% extends "components/modal/form-modal.html" %}
+{% load misc %}
+
+{% block modal_body %}
+    {% spaceless %}
+        <div id="new-member-form-container" class="">
+            {% include "partials/projects/list/form.html" %}
+        </div>
+    {% endspaceless %}
+{% endblock %}

@@ -5,7 +5,7 @@ from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from home.models import Member, Assembly, FundraisingProject
+from home.models import Member, Assembly, FundraisingProject, PaymentMethod
 
 
 class RegistrationForm(UserCreationForm):
@@ -148,6 +148,15 @@ class AssemblyForm(forms.ModelForm):
         widgets = {
             "location": forms.Textarea(attrs={"rows": 3})
         }
+
+class PaymentMethodForm(forms.ModelForm):
+    initial_balance = forms.DecimalField(max_digits=11, min_value=0, decimal_places=2,label="Initial Balance")
+    class Meta:
+        model = PaymentMethod
+        exclude = ["total_balance", "available_balance"]
+        # widgets = {
+        #     "location": forms.Textarea(attrs={"rows": 3})
+        # }
 
 
 class FundraisingProjectForm(forms.ModelForm):

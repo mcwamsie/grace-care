@@ -1,0 +1,28 @@
+{% load static random_color %}
+<div class="shadow-none px-0 py-2 pt-0 pb-4 flex flex-col-reverse md:flex-row gap-4 justify-between md:items-center">
+    <div class="flex gap-4 items-center">
+        <span class="flex items-center justify-center rounded-md h-12 w-12 bg-blue-700">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-white/80 transition duration-75 group-hover:text-white ">
+                      <path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2V5z"></path>
+                      <path d="M2 9v1c0 1.1.9 2 2 2h1"></path>
+                      <path d="M16 11h.01"></path>
+                  </svg>
+              </span>
+        <div>
+            <h1 class="text-large font-bold">Project: {{ object.title | truncatechars:25 | title}}</h1>
+            <p class="text-small text-gray-500">
+                <span class="text-ble-300 mr-2">{{ object.church.name | title }}</span>
+            </p>
+        </div>
+    </div>
+    <div class="flex items-center space-x-4">
+        <a href="{% url "projects_list" %}" class="flex items-center text-blue-700 font-bold">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                <path d="M6 8L2 12L6 16"></path>
+                <path d="M2 12H22"></path>
+            </svg>
+            <span class="ms-2">Back to Fundraising Projects</span>
+        </a>
+    </div>
+</div>

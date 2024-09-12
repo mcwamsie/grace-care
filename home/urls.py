@@ -3,9 +3,9 @@ from django.urls import path
 
 from home.views import HomeView, MemberListView, EditMemberView, NewMemberView, UserLoginView, logout_view, \
     UserRegistration, UserPasswordChangeView, \
-    FundraisingProjectListView, NewFundraisingProjectView, EditFundraisingProjectView,\
+    FundraisingProjectListView, NewFundraisingProjectView, EditFundraisingProjectView, \
     UserPasswordResetView, UserPasswordResetConfirmView, billing, DashboardView, send_test_email, AssemblyListView, \
-    NewAssemblyView, EditAssemblyView
+    NewAssemblyView, EditAssemblyView, PaymentMethodListView, NewPaymentMethodView
 
 urlpatterns = [
     path('test/', send_test_email, name='test'),
@@ -27,6 +27,11 @@ urlpatterns = [
     path('funderaising-projects/', FundraisingProjectListView.as_view(), name='projects_list'),
     path('funderaising-projects/new/', NewFundraisingProjectView.as_view(), name='projects_add'),
     path('funderaising-projects/update/<int:pk>/', EditFundraisingProjectView.as_view(), name='projects_update'),
+
+    # Fundraising Projects
+    path('payment-methods/', PaymentMethodListView.as_view(), name='methods_list'),
+    path('payment-methods/new/', NewPaymentMethodView.as_view(), name='methods_add'),
+    path('payment-methods/update/<int:pk>/', EditFundraisingProjectView.as_view(), name='methods_update'),
 
     # Authentication
     path('accounts/login/', UserLoginView.as_view(), name='login'),

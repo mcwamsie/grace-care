@@ -9,7 +9,7 @@ from django.urls import reverse
 from core import settings
 from home.emails import send_html_email_with_logo, send_welcome_email
 from home.forms import LoginForm, RegistrationForm, UserPasswordChangeForm, UserPasswordResetForm, UserSetPasswordForm, \
-    MemberForm, AssemblyForm, FundraisingProjectForm
+    MemberForm, AssemblyForm, FundraisingProjectForm, PaymentMethodForm
 from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetView, PasswordResetConfirmView
 from django.contrib.auth import logout, login, authenticate
 
@@ -18,7 +18,7 @@ from django.views.generic import CreateView, TemplateView, ListView, UpdateView
 from django.contrib.auth.decorators import login_required
 
 from home.generators import random_password_generator
-from home.models import Member, Church, Assembly, FundraisingProject
+from home.models import Member, Church, Assembly, FundraisingProject, PaymentMethod
 from home.search_filter import SearchFilter
 from home.utils import AccessRequiredMixin
 
@@ -171,7 +171,7 @@ class EditAssemblyView(AccessRequiredMixin, UpdateView):
     model = Assembly
     form_class = AssemblyForm
     template_name = "app/assemblies/edit.html"
-    required_roles = ["admin", "cashier"]
+    required_roles = ["admin"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -257,7 +257,7 @@ class EditMemberView(AccessRequiredMixin, UpdateView):
     model = Member
     form_class = MemberForm
     template_name = "app/members/edit.html"
-    required_roles = ["admin", "cashier"]
+    required_roles = ["admin"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -281,7 +281,7 @@ class EditMemberView(AccessRequiredMixin, UpdateView):
                           {'form': form, 'object': member})
 
 #==================== End Members ==================
-# =================== Fundraising Projects==========
+# =================== Fundraising Projects ==========
 
 class FundraisingProjectListView(AccessRequiredMixin, ListView, SearchFilter):
     model = FundraisingProject
@@ -329,7 +329,7 @@ class EditFundraisingProjectView(AccessRequiredMixin, UpdateView):
     model = FundraisingProject
     form_class = FundraisingProjectForm
     template_name = "app/projects/edit.html"
-    required_roles = ["admin", "cashier"]
+    required_roles = ["admin"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -349,8 +349,79 @@ class EditFundraisingProjectView(AccessRequiredMixin, UpdateView):
             return response
         else:
             print("errors", form.errors)
-            return render(request, 'partials/assemblies/edit/modals/update.form.html',
+            return render(request, 'partials/projects/edit/modals/update.form.html',
                           {'form': form, 'object': project})
+#==================== End Fundraising Projects======
+# =================== Payment Methods ==========
+
+class PaymentMethodListView(AccessRequiredMixin, ListView, SearchFilter):
+    model = PaymentMethod
+    template_name = "app/methods/list.html"
+    paginate_by = settings.PAGE_SIZE
+    paginator_class = Paginator
+    required_roles = ["admin"]
+    search_fields = ["title", "description"]
+    total_count = 0
+
+    def get_queryset(self):
+        queryset = super().get_queryset().filter(
+            Q(church=self.request.user.assembly.church)
+        )
+        self.total_count = queryset.count()
+        queryset = self.filter_queryset_here(request=self.request, queryset=queryset)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["total"] = self.total_count
+        context["form"] = PaymentMethodForm(initial={"active": True, "church": self.request.user.assembly.church})
+        return context
+
+class NewPaymentMethodView(AccessRequiredMixin, CreateView):
+    model = PaymentMethod
+    form_class = PaymentMethodForm
+    template_name = "partials/methods/list/form.html"
+    required_roles = ["admin"]
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST, request.FILES)
+        if form.is_valid():
+            method = form.save(commit=True)
+            messages.success(request, self.model._meta.verbose_name+" has been successfully created")
+            url = reverse("projects_update", kwargs={"pk": method.id})
+            response = render(request, "components/misc/redirect.html", {"url": url})
+            response["HX-Retarget"] = "#success-url"
+            return response
+        else:
+            print("errors", form.errors)
+            return self.render_to_response(context={"form": form})
+
+class EditPaymentMethodView(AccessRequiredMixin, UpdateView):
+    model = PaymentMethod
+    form_class = PaymentMethodForm
+    template_name = "app/methods/edit.html"
+    required_roles = ["admin"]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = self.form_class(instance=self.object)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        method = self.get_object()
+        form = self.form_class(request.POST, request.FILES, instance=method)
+
+        if form.is_valid():
+            method = form.save(commit=True)
+            messages.success(request, self.model._meta.verbose_name+" has been successfully updated")
+            url = reverse("projects_update", kwargs={"pk": method.id})
+            response = render(request, "components/misc/redirect.html", {"url": url})
+            response["HX-Retarget"] = "#success-url"
+            return response
+        else:
+            print("errors", form.errors)
+            return render(request, 'partials/methods/edit/modals/update.form.html',
+                          {'form': form, 'object': method})
 
 def send_test_email(request):
     subject = 'Test Email'

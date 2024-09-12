@@ -133,6 +133,7 @@ CURRENCY_CHOICES = [
         ("Z$", "ZWG")
     ]
 class PaymentMethod(models.Model):
+    church = models.ForeignKey(Church, related_name='payment_methods', on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     currency = models.CharField(max_length=100, choices=CURRENCY_CHOICES, default='USD')
     incoming_payments = models.BooleanField(default=False, verbose_name="Incoming Payments")
@@ -141,6 +142,7 @@ class PaymentMethod(models.Model):
                                             verbose_name="Available_Balance")
     total_balance = models.DecimalField(default=0, decimal_places=2, max_digits=11, verbose_name="Total Balance")
     accountNumber = models.CharField(max_length=100, verbose_name="Account Number")
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
