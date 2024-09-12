@@ -1,0 +1,26 @@
+<form action="{% url "logout" %}" method="post"
+      class="p-4 md:p-5 text-center">
+    {% csrf_token %}
+    <svg class="mx-auto mb-4 text-gray-400 w-12 h-12" aria-hidden="true"
+         xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path>
+    </svg>
+
+    
+    <h3 class="mb-5 text-base font-normal text-gray-500">
+        Are you sure, you want to log out
+    </h3>
+    <div class="flex gap-4 justify-center">
+        <button data-modal-hide="{{ popup_id }}" type="button"
+                class="py-2 px-5 text-sm font-medium text-gray-900 rounded-md focus:outline-none bg-white border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 ring-offset-2 focus:ring-gray-100">
+            No, cancel
+        </button>
+        <button type="submit"
+                class="text-white bg-red-600 hover:bg-red-800 rounded-md focus:ring-2 ring-offset-2 focus:outline-none focus:ring-red-800 font-medium text-sm inline-flex items-center px-5 py-2 text-center">
+            Yes, I'm sure
+        </button>
+
+    </div>
+
+</form>

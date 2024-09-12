@@ -1,7 +1,7 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 
-from home.views import HomeView, dashboard, UserLoginView, logout_view, UserRegistration, UserPasswordChangeView, \
+from home.views import HomeView, MemberListView, EditMemberView, NewMemberView, UserLoginView, logout_view, UserRegistration, UserPasswordChangeView, \
     UserPasswordResetView, UserPasswordResetConfirmView, billing, DashboardView
 
 urlpatterns = [
@@ -9,6 +9,11 @@ urlpatterns = [
     path('billing', billing, name='billing'),
     path('profile', billing, name='profile'),
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
+
+
+    path('members/', MemberListView.as_view(), name='member_list'),
+    path('members/new/', NewMemberView.as_view(), name='member_add'),
+    path('members/update/<int:pk>/', EditMemberView.as_view(), name='member_update'),
 
 
         # Authentication

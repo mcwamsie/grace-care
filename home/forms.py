@@ -1,37 +1,47 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm, UsernameField, \
     PasswordResetForm, SetPasswordForm
-from django.contrib.auth.models import User
+from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
-from home.models import Member
+from home.models import Member, Church, Assembly
 
 
 class RegistrationForm(UserCreationForm):
+    first_name = forms.CharField(label=_('First Name'), max_length=50, required=True)
+    last_name = forms.CharField(label=_('Last Name'), max_length=50, required=True)
+    email = forms.EmailField(label=_('Email'), required=True)
+    phone_number = forms.CharField(label=_('Phone Number'), max_length=50, required=True)
     password1 = forms.CharField(
         label=_("Password"),
         widget=forms.PasswordInput(attrs={
-            'class': 'text-sm focus:shadow-soft-primary-outline leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding py-2 px-3 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:bg-white focus:text-gray-700 focus:outline-none focus:transition-shadow',
             'placeholder': 'Password'}),
     )
     password2 = forms.CharField(
         label=_("Password Confirmation"),
         widget=forms.PasswordInput(attrs={
-            'class': 'text-sm focus:shadow-soft-primary-outline leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding py-2 px-3 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:bg-white focus:text-gray-700 focus:outline-none focus:transition-shadow',
             'placeholder': 'Password Confirmation'}),
+    )
+    assembly = forms.ModelChoiceField(
+        queryset=Assembly.objects.filter(
+            Q(active=True) &
+            Q(church__active=True)
+        ),
     )
 
     class Meta:
-        model = User
-        fields = ('username', 'email',)
+        model = Member
+        fields = [
+            "first_name",
+            "email",
+            "last_name",
+            "assembly",
+            "phone_number"
+        ]
 
         widgets = {
-            'username': forms.TextInput(attrs={
-                'class': 'text-sm focus:shadow-soft-primary-outline leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding py-2 px-3 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:bg-white focus:text-gray-700 focus:outline-none focus:transition-shadow',
-                'placeholder': 'Username'
-            }),
+
             'email': forms.EmailInput(attrs={
-                'class': 'text-sm focus:shadow-soft-primary-outline leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding py-2 px-3 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:bg-white focus:text-gray-700 focus:outline-none focus:transition-shadow',
                 'placeholder': 'Email'
             })
         }
@@ -72,15 +82,12 @@ class UserSetPasswordForm(SetPasswordForm):
 
 class UserPasswordChangeForm(PasswordChangeForm):
     old_password = forms.CharField(max_length=50, widget=forms.PasswordInput(attrs={
-        'class': 'focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow',
         'placeholder': 'Old Password'
     }), label='Old Password')
     new_password1 = forms.CharField(max_length=50, widget=forms.PasswordInput(attrs={
-        'class': 'focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow',
         'placeholder': 'New Password'
     }), label="New Password")
     new_password2 = forms.CharField(max_length=50, widget=forms.PasswordInput(attrs={
-        'class': 'focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow',
         'placeholder': 'Confirm New Password'
     }), label="Confirm New Password")
 

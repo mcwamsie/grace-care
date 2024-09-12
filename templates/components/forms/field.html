@@ -20,7 +20,7 @@
             </label>
         {% endif %}
         {% if field.field.widget|is_textarea %}
-            {% render_field field class+=" peer block appearance-none border border-border w-full h-auto px-3 text-gray-700 leading-tight focus:ring-active-500 focus:outline-none focus:shadow-outline" %}
+            {% render_field field class+=" peer block appearance-none border rounded-md border-border w-full h-auto px-3 text-gray-700 leading-tight focus:ring-active-500 focus:outline-none focus:shadow-outline" %}
         {% elif field.field.widget|is_select_multiple %}
             {{ field }}
             {#            {% render_field field class+=" peer block appearance-none border border-border w-full h-auto px-3 text-gray-700 leading-tight focus:ring-active-500 focus:outline-none focus:shadow-outline" %}#}
@@ -28,7 +28,7 @@
             {{ field }}
             {#            {% render_field field class+=" peer block appearance-none border border-border w-full h-auto px-3 text-gray-700 leading-tight focus:ring-active-500 focus:outline-none focus:shadow-outline" %}#}
         {% else %}
-            {% render_field field class+=" peer block appearance-none border border-border w-full h-9 px-3 py-1 text-gray-700 leading-tight focus:ring-active-500 focus:outline-none focus:shadow-outline" %}
+            {% render_field field class+=" peer block appearance-none rounded-md border border-border w-full h-9 px-3 py-1 text-gray-700 leading-tight focus:ring-active-500 focus:outline-none focus:shadow-outline" %}
         {% endif %}
     {% endif %}
 

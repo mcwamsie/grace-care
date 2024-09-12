@@ -1,7 +1,10 @@
 <div class="shadow-none px-0 py-2 pt-0 pb-4 flex justify-between items-center">
     <div>
-        <h1 class="text-large font-bold">All Packages</h1>
-        <p class="text-small text-gray-500">List of all Health Save package in the system</p>
+        <h1 class="text-large font-bold">All Members</h1>
+        <p class="text-small text-gray-500">List of all 
+            <span class="font-bold">{{ request.user.assembly.church.name | title }}</span>
+            members in the system
+        </p>
     </div>
     <div class="flex items-center space-x-4">
         <div class="text-gray-700 font-bold">{{ object_list.count }} Available</div>

@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.core.paginator import Paginator
+from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.urls import reverse
@@ -8,7 +9,7 @@ from core import settings
 from home.forms import LoginForm, RegistrationForm, UserPasswordChangeForm, UserPasswordResetForm, UserSetPasswordForm, \
     MemberForm
 from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetView, PasswordResetConfirmView
-from django.contrib.auth import logout
+from django.contrib.auth import logout, login, authenticate
 
 from django.views.generic import CreateView, TemplateView, ListView, UpdateView
 
@@ -38,8 +39,10 @@ def dashboard(request):
     }
     return render(request, '', context)
 
+
 class DashboardView(AccessRequiredMixin, TemplateView):
     template_name = "app/dashboard.html"
+
 
 @login_required(login_url="/accounts/login/")
 def billing(request):
@@ -70,6 +73,31 @@ class UserRegistration(CreateView):
     form_class = RegistrationForm
     success_url = "/accounts/login/"
 
+    def form_valid(self, form):
+        member = form.save(commit=False)
+        member.role = "member"
+        member.is_active = True
+        member.is_staff = False
+        member.is_superuser = False
+        member.save()
+
+        raw_password = form.cleaned_data.get('password1')
+        user = authenticate(username=member.email, password=raw_password)
+
+        if user is not None:
+            # Log the user in
+            messages.success(self.request, "Welcome to Grace Care!")
+            login(self.request, user)
+            return redirect('dashboard')
+        return redirect('dashboard')
+    # def post(self, request, *args, **kwargs):
+    #     form = self.form_class(request.POST)
+    #     if form.is_valid():
+    #
+    #     else:
+    #         messages.error(self.request, 'Please correct the error below.')
+    #         return self.form_invalid(form)
+
 
 def logout_view(request):
     logout(request)
@@ -98,12 +126,14 @@ class MemberListView(AccessRequiredMixin, ListView, SearchFilter):
     template_name = "app/members/list.html"
     paginate_by = settings.PAGE_SIZE
     paginator_class = Paginator
-    required_roles = ["A"]
+    required_roles = ["admin"]
     search_fields = ["name", ]
     total_count = 0
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().filter(
+            Q(assembly__church=self.request.user.assembly.church)
+        )
         self.total_count = queryset.count()
         queryset = self.filter_queryset_here(request=self.request, queryset=queryset)
         return queryset

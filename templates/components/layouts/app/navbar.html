@@ -1,5 +1,5 @@
 {% load static random_color %}
-<nav class="bg-white border-gray-200 fixed lg:left-60 top-0 right-0 left-0">
+<nav class="bg-white border-gray-200 fixed z-[49] lg:left-60 top-0 right-0 left-0">
     <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4 py-2">
         <button data-drawer-target="app-sidebar" data-drawer-toggle="app-sidebar" type="button"
                 class="inline-flex items-center p-2 w-8 h-8 justify-center text-sm text-gray-500 rounded-lg lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
@@ -55,14 +55,14 @@
                     
                 </div>
                 <ul class="py-2" aria-labelledby="user-menu-button">
-                    <li>
-                        <a href="{% url "dashboard" %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Dashboard</a>
+                    <li class="w-full">
+                        <a href="{% url "dashboard" %}" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Dashboard</a>
                     </li>
-                    <li>
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
+                    <li class="w-full">
+                        <button type="button" class="block px-4 py-2 text-sm text-gray-700 w-full text-left hover:bg-gray-100">Settings</button>
                     </li>
-                    <li>
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign out</a>
+                    <li class="w-full">
+                        <button type="button" data-modal-target="logout-popup" data-modal-toggle="logout-popup" class="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100">Sign out</button>
                     </li>
                 </ul>
             </div>
@@ -70,3 +70,6 @@
         </div>
     </div>
 </nav>
+
+{% include "components/layouts/app/logout-popup.html" with  popup_id="logout-popup" %}
+

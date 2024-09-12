@@ -1,33 +1,30 @@
 {% extends "components/layouts/auth/base.html" %}
-{% load static %}
+{% load static widget_tweaks %}
 {% block title %}Register{% endblock %}
 
 {% block content %}
-    <div class="flex flex-col w-full max-w-full px-3 mx-auto lg:mx-0 shrink-0 md:flex-0 md:w-7/12 lg:w-5/12 xl:w-4/12">
-
-        <div class="p-6 py-0">
-        <img src="{% static "assets/img/logos/grace-care-long.png" %}" class="h-8" alt="Flowbite Logo"/>
+   <div class="p-6 py-0">
+        <img src="{% static "assets/img/logos/grace-care-long.png" %}" class="h-8 mt-12 lg:mt-6" alt="Flowbite Logo"/>
 
         </div>
-
+ {% with WIDGET_ERROR_CLASS='border-red-500' %}
         <div class="relative flex flex-col min-w-0 break-words bg-transparent border-0 shadow-none lg:py4 dark:bg-gray-950 rounded-2xl bg-clip-border">
             <div class="p-6 pb-0 mb-0">
                 <h4 class="font-bold">Sign Up</h4>
                 <p class="mb-0">Enter your email and password to sign up</p>
             </div>
-            <div class="flex-auto p-6">
-                <form role="form" method="post">
+            <div class="flex-auto p-4">
+                <form novalidate role="form" method="post">
                     {% csrf_token %}
-                    <div class="flex flex-col gap-4 mb-6">
-                        {% include "components/forms/field.html" with field=form.username %}
-                        {% include "components/forms/field.html" with field=form.password %}
-                        <div class="flex items-center pl-12 mb-0.5 text-left min-h-6">
-                            <input id="rememberMe"
-                                   class="mt-0.5 rounded-10 duration-250 ease-in-out after:rounded-circle after:shadow-2xl after:duration-250 checked:after:translate-x-5.3 h-5 relative float-left -ml-12 w-10 cursor-pointer appearance-none border border-solid border-gray-200 bg-zinc-700/10 bg-none bg-contain bg-left bg-no-repeat align-top transition-all after:absolute after:top-px after:h-4 after:w-4 after:translate-x-px after:bg-white after:content-[''] checked:border-blue-500/95 checked:bg-blue-500/95 checked:bg-none checked:bg-right"
-                                   type="checkbox"/>
-                            <label class="ml-2 font-normal cursor-pointer select-none text-sm text-slate-700"
-                                   for="rememberMe">Remember me</label>
-                        </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                        {% include "components/forms/non-field-errors.html" with field=form.first_name %}
+                        {% include "components/forms/field.html" with field=form.first_name %}
+                        {% include "components/forms/field.html" with field=form.last_name %}
+                        {% include "components/forms/field.html" with field=form.phone_number %}
+                        {% include "components/forms/field.html" with field=form.email %}
+                        {% include "components/forms/field.html" with field=form.assembly css_classes="col-span-1 sm:col-span-2"%}
+                        {% include "components/forms/field.html" with field=form.password1 %}
+                        {% include "components/forms/field.html" with field=form.password2 %}
                     </div>
 
                     {% include "components/forms/simple-submit-button.html" %}
@@ -41,9 +38,18 @@
                 </p>
             </div>
         </div>
-    </div>
+    {% endwith %}
+   
 {% endblock content %}
 
-{% block extrascript %}
-
+{% block styles %}
+    {% include "layouts/plugins/jquery.html" %}
+    {% include "layouts/plugins/selectize.html" %}
+{% endblock %}
+{% block scripts %}
+    {% include "layouts/plugins/htmx.html" %}
+    {% include "layouts/plugins/form-js.html" %}
+    <script>
+    $("select").selectize()
+</script>
 {% endblock %}

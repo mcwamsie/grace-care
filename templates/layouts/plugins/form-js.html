@@ -1,0 +1,9 @@
+<script>
+    $(document).on('htmx:beforeRequest', function (e) {
+        $('.form button[type="submit"]').prop('disabled', true);
+    });
+
+    $(document).on('htmx:afterRequest', function (e) {
+        $('.form button[type="submit"]').prop('disabled', false);
+    });
+</script>

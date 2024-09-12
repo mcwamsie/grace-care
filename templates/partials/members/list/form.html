@@ -4,9 +4,9 @@
       class="form flex flex-col gap-4"
       novalidate
         {% if object %}
-      hx-post="{% url "packages_edit" pk=object.id %}"
+      hx-post="{% url "member_update" pk=object.id %}"
         {% else %}
-      hx-post="{% url "packages_new" %}"
+      hx-post="{% url "member_add" %}"
         {% endif %}
       class="form"
       enctype="multipart/form-data"

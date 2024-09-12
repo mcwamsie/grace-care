@@ -8,6 +8,7 @@ class Church(models.Model):
     name = models.CharField(max_length=255)
     address = models.TextField()
     logo = models.ImageField(upload_to='church_logos/', null=True, blank=True)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
@@ -22,6 +23,7 @@ class Assembly(models.Model):
     name = models.CharField(max_length=255)
     church = models.ForeignKey(Church, related_name='assemblies', on_delete=models.CASCADE)
     location = models.CharField(max_length=255)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.church.name.upper() + "/" + self.name.upper()

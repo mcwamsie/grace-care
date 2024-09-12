@@ -4,7 +4,7 @@
 {% block modal_body %}
     {% spaceless %}
         <div id="package-form-container-{% if object %}{{ "-"| concat:object.id }}{% endif %}" class="">
-            {% include "partials/app/packages/list/form.html" %}
+            {% include "partials/members/list/form.html" %}
         </div>
     {% endspaceless %}
 {% endblock %}

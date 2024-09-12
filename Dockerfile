@@ -21,5 +21,8 @@ RUN python manage.py makemigrations
 # running migrations
 RUN python manage.py migrate
 
+#
+RUN python manage.py createsuperadmin
+
 # gunicorn
 CMD ["gunicorn", "--config", "gunicorn-cfg.py", "core.wsgi"]

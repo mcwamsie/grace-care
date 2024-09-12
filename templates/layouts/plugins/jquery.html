@@ -1,0 +1,6 @@
+{% load static %}
+{% if debug %}
+    <script src="{% static "assets/jquery.min.js" %}"></script>
+{% else %}
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+{% endif %}
