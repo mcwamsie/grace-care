@@ -128,8 +128,13 @@ class MonthlySubscription(models.Model):
         self.save()
 
 
+CURRENCY_CHOICES = [
+        ("$", "USD"),
+        ("Z$", "ZWG")
+    ]
 class PaymentMethod(models.Model):
     name = models.CharField(max_length=100)
+    currency = models.CharField(max_length=100, choices=CURRENCY_CHOICES, default='USD')
     incoming_payments = models.BooleanField(default=False, verbose_name="Incoming Payments")
     outgoing_payments = models.BooleanField(default=False, verbose_name="Outgoing Payments")
     available_balance = models.DecimalField(default=0, decimal_places=2, max_digits=11,
@@ -183,6 +188,7 @@ class FundraisingProject(models.Model):
     church = models.ForeignKey(Church, related_name='fundraising_projects', on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     description = models.TextField()
+    currency = models.CharField(max_length=100, choices=CURRENCY_CHOICES, default='USD')
     target_amount = models.DecimalField(max_digits=15, decimal_places=2)
     raised_amount = models.DecimalField(max_digits=15, decimal_places=2, default=0)
     start_date = models.DateField()
@@ -191,6 +197,11 @@ class FundraisingProject(models.Model):
 
     def __str__(self):
         return self.title
+
+    class Meta:
+        ordering = ["start_date", "end_date"]
+        verbose_name = "Fundraising Project"
+        verbose_name_plural = "Fundraising Projects"
 
 
 class FundraisingContribution(models.Model):

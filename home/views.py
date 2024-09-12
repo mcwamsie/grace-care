@@ -9,7 +9,7 @@ from django.urls import reverse
 from core import settings
 from home.emails import send_html_email_with_logo, send_welcome_email
 from home.forms import LoginForm, RegistrationForm, UserPasswordChangeForm, UserPasswordResetForm, UserSetPasswordForm, \
-    MemberForm, AssemblyForm
+    MemberForm, AssemblyForm, FundraisingProjectForm
 from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetView, PasswordResetConfirmView
 from django.contrib.auth import logout, login, authenticate
 
@@ -18,7 +18,7 @@ from django.views.generic import CreateView, TemplateView, ListView, UpdateView
 from django.contrib.auth.decorators import login_required
 
 from home.generators import random_password_generator
-from home.models import Member, Church, Assembly
+from home.models import Member, Church, Assembly, FundraisingProject
 from home.search_filter import SearchFilter
 from home.utils import AccessRequiredMixin
 
@@ -123,7 +123,7 @@ class UserPasswordChangeView(PasswordChangeView):
 
 
 
-# ==================== Assemblies ==============
+# ==================== Assemblies ================
 
 class AssemblyListView(AccessRequiredMixin, ListView, SearchFilter):
     model = Assembly
@@ -194,7 +194,8 @@ class EditAssemblyView(AccessRequiredMixin, UpdateView):
             return render(request, 'partials/assemblies/edit/modals/update.form.html',
                           {'form': form, 'object': assembly})
 
-# ==================== Members ==============
+#==================== End Assemblies ==============
+# ==================== Members ====================
 
 class MemberListView(AccessRequiredMixin, ListView, SearchFilter):
     model = Member
@@ -279,7 +280,78 @@ class EditMemberView(AccessRequiredMixin, UpdateView):
             return render(request, 'partials/members/edit/modals/update.form.html',
                           {'form': form, 'object': member})
 
-#==================== End Members ==============
+#==================== End Members ==================
+# =================== Fundraising Projects==========
+
+class FundraisingProjectListView(AccessRequiredMixin, ListView, SearchFilter):
+    model = FundraisingProject
+    template_name = "app/projects/list.html"
+    paginate_by = settings.PAGE_SIZE
+    paginator_class = Paginator
+    required_roles = ["admin"]
+    search_fields = ["title", "description"]
+    total_count = 0
+
+    def get_queryset(self):
+        queryset = super().get_queryset().filter(
+            Q(church=self.request.user.assembly.church)
+        )
+        self.total_count = queryset.count()
+        queryset = self.filter_queryset_here(request=self.request, queryset=queryset)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["total"] = self.total_count
+        context["form"] = FundraisingProjectForm(initial={"active": True, "church": self.request.user.assembly.church})
+        return context
+
+class NewFundraisingProjectView(AccessRequiredMixin, CreateView):
+    model = FundraisingProject
+    form_class = FundraisingProjectForm
+    template_name = "partials/projects/list/form.html"
+    required_roles = ["admin"]
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST, request.FILES)
+        if form.is_valid():
+            project = form.save(commit=True)
+            messages.success(request, "Fundraising project has been successfully created")
+            url = reverse("projects_update", kwargs={"pk": project.id})
+            response = render(request, "components/misc/redirect.html", {"url": url})
+            response["HX-Retarget"] = "#success-url"
+            return response
+        else:
+            print("errors", form.errors)
+            return self.render_to_response(context={"form": form})
+
+class EditFundraisingProjectView(AccessRequiredMixin, UpdateView):
+    model = FundraisingProject
+    form_class = FundraisingProjectForm
+    template_name = "app/projects/edit.html"
+    required_roles = ["admin", "cashier"]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = self.form_class(instance=self.object)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        project = self.get_object()
+        form = self.form_class(request.POST, request.FILES, instance=project)
+
+        if form.is_valid():
+            project = form.save(commit=True)
+            messages.success(request, "Fundraising project  has been successfully updated")
+            url = reverse("projects_update", kwargs={"pk": project.id})
+            response = render(request, "components/misc/redirect.html", {"url": url})
+            response["HX-Retarget"] = "#success-url"
+            return response
+        else:
+            print("errors", form.errors)
+            return render(request, 'partials/assemblies/edit/modals/update.form.html',
+                          {'form': form, 'object': project})
+
 def send_test_email(request):
     subject = 'Test Email'
     message = 'This is a test email sent from Django.'

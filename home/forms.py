@@ -2,9 +2,10 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm, UsernameField, \
     PasswordResetForm, SetPasswordForm
 from django.db.models import Q
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from home.models import Member, Assembly
+from home.models import Member, Assembly, FundraisingProject
 
 
 class RegistrationForm(UserCreationForm):
@@ -143,7 +144,27 @@ class MemberForm(forms.ModelForm):
 class AssemblyForm(forms.ModelForm):
     class Meta:
         model = Assembly
-        exclude=["date_joined"]
+        exclude = ["date_joined"]
         widgets = {
             "location": forms.Textarea(attrs={"rows": 3})
+        }
+
+
+class FundraisingProjectForm(forms.ModelForm):
+    def clean(self):
+        data = super().clean()
+        start_date = data.get("start_date")
+        end_date = data.get("end_date")
+        if end_date < start_date:
+            raise forms.ValidationError({"end_date": "End date must be greater than start date"})
+        if end_date < timezone.now().today().date():
+            raise forms.ValidationError({"end_date": "End date must be in the future"})
+
+    class Meta:
+        model = FundraisingProject
+        exclude = ["raised_amount"]
+        widgets = {
+            "description": forms.Textarea(attrs={"rows": 3}),
+            "start_date": forms.DateInput(attrs={"type": "date"}),
+            "end_date": forms.DateInput(attrs={"type": "date"}),
         }

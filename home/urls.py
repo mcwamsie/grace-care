@@ -3,6 +3,7 @@ from django.urls import path
 
 from home.views import HomeView, MemberListView, EditMemberView, NewMemberView, UserLoginView, logout_view, \
     UserRegistration, UserPasswordChangeView, \
+    FundraisingProjectListView, NewFundraisingProjectView, EditFundraisingProjectView,\
     UserPasswordResetView, UserPasswordResetConfirmView, billing, DashboardView, send_test_email, AssemblyListView, \
     NewAssemblyView, EditAssemblyView
 
@@ -21,6 +22,11 @@ urlpatterns = [
     path('assemblies/', AssemblyListView.as_view(), name='assembly_list'),
     path('assemblies/new/', NewAssemblyView.as_view(), name='assembly_add'),
     path('assemblies/update/<int:pk>/', EditAssemblyView.as_view(), name='assembly_update'),
+
+    # Fundraising Projects
+    path('funderaising-projects/', FundraisingProjectListView.as_view(), name='projects_list'),
+    path('funderaising-projects/new/', NewFundraisingProjectView.as_view(), name='projects_add'),
+    path('funderaising-projects/update/<int:pk>/', EditFundraisingProjectView.as_view(), name='projects_update'),
 
     # Authentication
     path('accounts/login/', UserLoginView.as_view(), name='login'),
