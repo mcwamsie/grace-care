@@ -12,7 +12,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 RUN mkdir -p /app/mediafiles
-RUN mkdir -p data
+RUN mkdir -p /app/db
 
 # Collect static files
 RUN python manage.py collectstatic --noinput
