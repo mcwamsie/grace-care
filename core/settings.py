@@ -30,7 +30,7 @@ if not SECRET_KEY:
     SECRET_KEY = ''.join(random.choice(string.ascii_lowercase) for i in range(32))
 
 # Render Deployment Code
-#DEBUG = 'RENDER' not in os.environ
+# DEBUG = 'RENDER' not in os.environ
 DEBUG = True
 # HOSTs List
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     "sequences",
     "import_export",
     "active_link",
+    "rest_framework",
 
     "phonenumber_field",
     "django_htmx",
@@ -172,9 +173,12 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/dashboard/'
+LOGOUT_REDIRECT_URL = "/"
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 AUTH_USER_MODEL = 'home.Member'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
+PHONENUMBER_DEFAULT_REGION = "ZW"
+PAGE_SIZE = 16

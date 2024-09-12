@@ -1,33 +1,45 @@
+from django.contrib import messages
+from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from django.urls import reverse
 
-from home.forms import LoginForm, RegistrationForm, UserPasswordChangeForm, UserPasswordResetForm, UserSetPasswordForm
+from core import settings
+from home.forms import LoginForm, RegistrationForm, UserPasswordChangeForm, UserPasswordResetForm, UserSetPasswordForm, \
+    MemberForm
 from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetView, PasswordResetConfirmView
 from django.contrib.auth import logout
 
-from django.views.generic import CreateView
+from django.views.generic import CreateView, TemplateView, ListView, UpdateView
 
 from django.contrib.auth.decorators import login_required
 
+from home.models import Member
+from home.search_filter import SearchFilter
+from home.utils import AccessRequiredMixin
+
 
 # Create your views here.
+class HomeView(TemplateView, AccessRequiredMixin):
+    template_name = "pages/dashboard.html"
 
-def index(request):
-    context = {
-        'parent': 'pages',
-        'segment': 'index'
-    }
-    return render(request, 'pages/dashboard.html', context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['parent'] = 'pages'
+        context['segment'] = 'index'
+        return context
 
 
 @login_required(login_url="/accounts/login/")
-def tables(request):
+def dashboard(request):
     context = {
         'parent': 'pages',
-        'segment': 'tables'
+        'segment': 'billing'
     }
-    return render(request, 'pages/tables.html', context)
+    return render(request, '', context)
 
+class DashboardView(AccessRequiredMixin, TemplateView):
+    template_name = "app/dashboard.html"
 
 @login_required(login_url="/accounts/login/")
 def billing(request):
@@ -36,24 +48,6 @@ def billing(request):
         'segment': 'billing'
     }
     return render(request, 'pages/billing.html', context)
-
-
-@login_required(login_url="/accounts/login/")
-def vr(request):
-    context = {
-        'parent': 'pages',
-        'segment': 'vr'
-    }
-    return render(request, 'pages/virtual-reality.html', context)
-
-
-@login_required(login_url="/accounts/login/")
-def rtl(request):
-    context = {
-        'parent': 'pages',
-        'segment': 'rtl'
-    }
-    return render(request, 'pages/rtl.html', context)
 
 
 @login_required(login_url="/accounts/login/")
@@ -95,3 +89,69 @@ class UserPasswordResetConfirmView(PasswordResetConfirmView):
 class UserPasswordChangeView(PasswordChangeView):
     template_name = 'accounts/password_change.html'
     form_class = UserPasswordChangeForm
+
+
+# Members
+
+class MemberListView(AccessRequiredMixin, ListView, SearchFilter):
+    model = Member
+    template_name = "app/members/list.html"
+    paginate_by = settings.PAGE_SIZE
+    paginator_class = Paginator
+    required_roles = ["A"]
+    search_fields = ["name", ]
+    total_count = 0
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        self.total_count = queryset.count()
+        queryset = self.filter_queryset_here(request=self.request, queryset=queryset)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["total"] = self.total_count
+        return context
+
+
+class NewMemberView(AccessRequiredMixin, CreateView):
+    model = Member
+    form_class = MemberForm
+    template_name = "partials/members/list/form.html"
+    required_roles = ["A"]
+
+    def post(self, request, *args, **kwargs):
+        form = MemberForm(request.POST, request.FILES)
+        if form.is_valid():
+            member = form.save(commit=True)
+            messages.success(request, "Package has been successfully created")
+            url = reverse("members_edit", kwargs={"pk": member.id})
+            response = render(request, "components/misc/redirect.html", {"url": url})
+            response["HX-Retarget"] = "#success-url"
+            return response
+        else:
+            print("errors", form.errors)
+            return self.render_to_response(context={"form": form})
+
+
+class EditMemberView(AccessRequiredMixin, UpdateView):
+    model = Member
+    form_class = MemberForm
+    template_name = "app/members/edit.html"
+    required_roles = ["D", "A"]
+
+    def post(self, request, *args, **kwargs):
+        package = self.get_object()
+        form = MemberForm(request.POST, request.FILES, instance=package)
+
+        if form.is_valid():
+            package = form.save(commit=True)
+            messages.success(request, "Package has been successfully updated")
+            url = reverse("packages_edit", kwargs={"pk": package.id})
+            response = render(request, "components/misc/redirect.html", {"url": url})
+            response["HX-Retarget"] = "#success-url"
+            return response
+        else:
+            print("errors", form.errors)
+            return render(request, 'partials/members/edit/modals/update.form.html',
+                          {'form': form, 'object': package})

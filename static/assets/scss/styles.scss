@@ -1,3 +1,39 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@layer base {
+    html {
+        @apply h-full w-full
+    }
+
+    body {
+        @apply font-sans text-normal text-neutral-900 bg-white h-full w-full
+    }
+
+
+    [type='text'], [type='email'], [type='url'], [type='password'], [type='number'], [type='date'], [type='datetime-local'], [type='month'], [type='search'], [type='tel'], [type='time'], [type='week'], [multiple], textarea, select, .selectize-input {
+        @apply border-border focus:border-blue-600  w-full invalid:focus:ring-red-600 focus-visible:ring-1
+    }
+
+    legend {
+        @apply font-bold text-xl mb-4 text-neutral-600
+    }
+
+    [readonly] {
+        @apply bg-border
+    }
+
+    select[aria-invalid=true] ~ .selectize-control .selectize-input, select[aria-invalid=true] ~ .selectize-control input {
+        @apply !border-red-600 focus:!ring-red-600
+    }
+
+
+    th, td {
+        @apply whitespace-nowrap !px-2 py-1.5 text-small text-left border border-border
+    }
+
+    .pagination-item {
+        @apply flex items-center justify-center disabled:bg-gray-50 disabled:text-gray-600 h-full py-1.5 px-3 ml-0 text-blue-500 bg-white rounded-l-sm border border-gray-300 hover:bg-gray-100 hover:text-blue-700
+    }
+
+}

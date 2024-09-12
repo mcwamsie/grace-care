@@ -4,6 +4,8 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, Pass
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 
+from home.models import Member
+
 
 class RegistrationForm(UserCreationForm):
     password1 = forms.CharField(
@@ -81,3 +83,10 @@ class UserPasswordChangeForm(PasswordChangeForm):
         'class': 'focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow',
         'placeholder': 'Confirm New Password'
     }), label="Confirm New Password")
+
+
+# Member
+class MemberForm(forms.ModelForm):
+    class Meta:
+        model = Member
+        fields = "__all__"

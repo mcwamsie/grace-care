@@ -1,31 +1,48 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     {% include 'includes/head.html' %}
+    <title>{% block title %}{% endblock %} - Grace Care</title>
     {% block extrastyle %}{% endblock extrastyle %}
-  </head>
-  <body class="m-0 font-sans text-base antialiased font-normal dark:bg-slate-900 leading-default bg-gray-50 text-slate-500">
-    {% block overlay %}
-    <div class="absolute w-full bg-blue-500 dark:hidden min-h-75"></div>
-    {% endblock overlay %}
-    {% block sidebar %}
-      {% include 'includes/sidebar.html' %}
-    {% endblock sidebar %}
-
-    <main class="relative h-full max-h-screen transition-all duration-200 ease-in-out xl:ml-68 rounded-xl">
-      {% block navigation %}
-        {% include 'includes/navigation.html' %}
-      {% endblock navigation %}
-      {% block breadcrumbs %}{% endblock breadcrumbs %}
-      {% block content %}
-      
-      {% endblock content %}
-    </main>
-  </body>
-
-  {% include 'includes/fixed_plugin.html' %}
-
-  {% include 'includes/scripts.html' %}
-  {% block extra_js %}{% endblock extra_js %}
-
+</head>
+<body class="m-0 font-sans text-base antialiased font-normal dark:bg-slate-900 leading-default bg-gray-50 text-slate-500  lg:max-w-full lg:max-h-full lg:overflow-hidden">
+{% include "components/layouts/app/sidebar.html" %}
+{% include "components/layouts/app/navbar.html" %}
+<div class="p-4 lg:pl-64 pt-16 lg:max-w-full lg:max-h-full lg:overflow-hidden w-full h-full">
+{% block content %}{% endblock %}
+{#<button data-drawer-target="app-sidebar" data-drawer-toggle="app-sidebar" aria-controls="separator-sidebar"#}
+{#        type="button"#}
+{#        class="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">#}
+{#    <span class="sr-only">Open sidebar</span>#}
+{#    <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">#}
+{#        <path clip-rule="evenodd" fill-rule="evenodd"#}
+{#              d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>#}
+{#    </svg>#}
+{#</button>#}
+<div id="success-url"></div>
+{% block modals %}{% endblock %}
+</div>
+{% if debug %}
+    <script src="{% static 'assets/flowbite/flowbite.min.js' %}"></script>
+    <script src="{% static 'assets/notyf/notyf.min.js' %}"></script>
+{% else %}
+    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
+{% endif %}
+{% block scripts %}{% endblock %}
+<script src="{% static 'assets/notify.js' %}"></script>
+{% if messages %}
+    <script>
+        {% for message in messages %}
+            notification['{{ message.tags }}']("{{ message|capfirst }}");
+        {% endfor %}
+    </script>
+{% endif %}
+</body>
 </html>
+
+
+
+
+

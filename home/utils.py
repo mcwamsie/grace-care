@@ -1,5 +1,8 @@
 import datetime
 import json
+
+from django.contrib.auth.mixins import AccessMixin
+from django.shortcuts import redirect
 from django.template import Context
 from django.utils import translation
 
@@ -466,3 +469,21 @@ def user_is_authenticated(user):
         return user.is_authenticated
     else:
         return user.is_authenticated()
+
+
+class AccessRequiredMixin(AccessMixin):
+    required_roles = []
+    """Verify that the current user is authenticated."""
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
+
+        if request.user.is_superuser or request.user.is_staff:
+            messages.error(request, "Admin user are not allowed to access this page.")
+            return redirect("/admin")
+
+        if self.required_roles and request.user.role not in self.required_roles:
+            messages.error(request, "You are not allowed to access this module.")
+            return redirect("dashboard")
+        return super().dispatch(request, *args, **kwargs)

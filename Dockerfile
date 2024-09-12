@@ -16,10 +16,10 @@ RUN mkdir -p /app/mediafiles
 # Collect static files
 RUN python manage.py collectstatic --noinput
 
-#RUN python manage.py makemigrations
+RUN python manage.py makemigrations
 
 # running migrations
-#RUN python manage.py migrate
+RUN python manage.py migrate
 
 # gunicorn
 CMD ["gunicorn", "--config", "gunicorn-cfg.py", "core.wsgi"]

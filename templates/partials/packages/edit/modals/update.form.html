@@ -1,0 +1,28 @@
+<form id="new-member-form"
+      class="form flex flex-col gap-4"
+      novalidate
+      hx-post="{% url "packages_edit" pk=object.id %}"
+      class="form"
+      enctype="multipart/form-data"
+      hx-target="#update-container"
+      hx-swap="innerHTML" autocomplete="off"
+>
+    {% include "components/forms/non-field-errors.html" %}
+    {% csrf_token %}
+
+    {% with WIDGET_ERROR_CLASS='border-red-500 ring-red-500' %}
+        <div class="grid grid-cols-2 gap-4">
+            {% include 'components/forms/field.html' with field=form.photo css_classes="col-span-2" %}
+            {% include 'components/forms/field.html' with field=form.name css_classes="col-span-2" %}
+            {% include 'components/forms/field.html' with field=form.ordinal css_classes="col-span-2" %}
+            {% include 'components/forms/field.html' with field=form.beneficiaryLimit css_classes="col-span-2" %}
+            {% include 'components/forms/field.html' with field=form.is_active css_classes="col-span-2" %}
+        </div>
+    {% endwith %}
+    {% include "components/forms/submit-button.html" %}
+</form>
+
+
+<script>
+    $("select").selectize()
+</script>

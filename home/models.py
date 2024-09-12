@@ -12,6 +12,11 @@ class Church(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        ordering = ['name']
+        verbose_name_plural = 'Churches'
+        verbose_name = "Church"
+
 
 class Assembly(models.Model):
     name = models.CharField(max_length=255)
@@ -19,7 +24,12 @@ class Assembly(models.Model):
     location = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.name
+        return self.church.name.upper() + "/" + self.name.upper()
+
+    class Meta:
+        ordering = ['name']
+        verbose_name_plural = 'Assemblies'
+        verbose_name = 'Assembly'
 
 
 class MemberManager(BaseUserManager):
@@ -32,8 +42,15 @@ class MemberManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, password=None, **extra_fields):
-        extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_active', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
+
         return self.create_user(email, password, **extra_fields)
 
 
@@ -53,6 +70,7 @@ class Member(AbstractBaseUser, PermissionsMixin):
         ('cashier', 'Cashier'),
         ('member', 'Member'),
     ]
+    profilePhoto = models.ImageField(upload_to='member-profiles/', null=True, blank=True)
     role = models.CharField(max_length=255, choices=ROLE_CHOICES, default='admin')
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = [

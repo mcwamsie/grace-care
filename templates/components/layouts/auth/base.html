@@ -16,6 +16,7 @@
 {% load static %}
 <html lang="en">
 <head>
+    <title>{% block Title %}{% endblock %} - Grace Care</title>
     {% include 'includes/head.html' %}
 </head>
 
@@ -25,7 +26,8 @@
     <section>
         <div class="relative flex items-center min-h-screen p-0 overflow-hidden bg-center bg-cover">
             <div class="container z-1">
-                <div class="flex flex-wrap -mx-3">
+                <div class="flex flex-col gap-4 -mx-3">
+               
                     {% block content %}{% endblock content %}
                     <div class="absolute top-0 right-0 flex-col justify-center hidden w-6/12 h-full max-w-full px-3 pr-0 my-auto text-center flex-0 lg:flex">
                         <div class="relative flex flex-col justify-center h-full bg-cover px-24 m-4 overflow-hidden bg-[url('https://raw.githubusercontent.com/creativetimofficial/public-assets/master/argon-dashboard-pro/assets/img/signin-ill.jpg')] rounded-xl ">
@@ -42,15 +44,23 @@
 
 </main>
 
-{% block footer %}
-    {% include 'includes/footer-fullscreen.html' %}
-{% endblock footer %}
 
 </body>
-
+{% if debug %}
+    <script src="{% static 'assets/flowbite/flowbite.min.js' %}"></script>
+    <script src="{% static 'assets/notyf/notyf.min.js' %}"></script>
+{% else %}
+    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
+{% endif %}
 <script src="{% static 'assets/js/plugins/perfect-scrollbar.min.js' %}" async></script>
-<!-- main script file  -->
-{% include 'includes/argon-dashboard-tailwind.html' %}
-
+<script src="{% static 'assets/notify.js' %}"></script>
+{% if messages %}
+    <script>
+        {% for message in messages %}
+            notification['{{ message.tags }}']("{{ message|capfirst }}");
+        {% endfor %}
+    </script>
+{% endif %}
 {% block extrascript %}{% endblock extrascript %}
 </html>

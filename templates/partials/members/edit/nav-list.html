@@ -1,0 +1,25 @@
+<div class="border-b border-gray-200 max-w-full pt-2">
+    <ul class="flex flex-nowrap whitespace-nowrap max-w-full overflow-x-auto -mb-px text-sm font-medium text-center"
+        id="default-tab"
+        data-tabs-toggle="#default-tab-content" role="tablist">
+        {% with request.GET.activeTab as at %}
+            <li class="me-2" role="presentation">
+                <button class="inline-block px-4 py-2 border-b-2 rounded-t-lg"
+                        id="overview-tab"
+                        data-tabs-target="#overview" type="button" role="tab" aria-controls="overview"
+                        aria-selected="{% if not at %}true{% else %}false{% endif %}">
+                    Overview
+                </button>
+            </li>
+            <li class="me-2" role="presentation">
+                <button class="inline-block px-4 py-2 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300"
+                        id="benefits-tab" data-tabs-target="#benefits" type="button" role="tab"
+                        aria-controls="benefits"
+                        aria-selected="{% if at == 'benefits' %}true{% else %}false{% endif %}">
+                    Benefits
+                </button>
+            </li>
+        {% endwith %}
+    </ul>
+</div>
+
