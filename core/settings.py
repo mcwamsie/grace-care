@@ -123,8 +123,8 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            #'NAME': 'db.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db', 'db.sqlite3'),
+            'NAME': 'db.sqlite3',
+            #'NAME': os.path.join(BASE_DIR, 'db', 'db.sqlite3'),
         }
     }
 
@@ -192,4 +192,4 @@ EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
 EMAIL_HOST_USER = 'f6541a2f18cff5'
 EMAIL_HOST_PASSWORD = 'ae660ab2fe0abb'
 EMAIL_PORT = '2525'
-DEFAULT_FROM_EMAIL="teenzmcwamsie@gmail.com"
+DEFAULT_FROM_EMAIL = "teenzmcwamsie@gmail.com"
