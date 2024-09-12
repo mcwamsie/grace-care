@@ -175,10 +175,20 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = "/"
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 AUTH_USER_MODEL = 'home.Member'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
 PHONENUMBER_DEFAULT_REGION = "ZW"
 PAGE_SIZE = 16
+
+# EMAIL_HOST = "smtp.mailgun.org"
+# EMAIL_PORT = int(587)
+# EMAIL_HOST_USER = "postmaster@sandbox487681b9998e4bf7a115d02d72453b75.mailgun.org"
+# EMAIL_HOST_PASSWORD = "9ec543c86ee08064c8c49180ae1df226-826eddfb-c45eb39e"
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
+EMAIL_HOST_USER = 'f6541a2f18cff5'
+EMAIL_HOST_PASSWORD = 'ae660ab2fe0abb'
+EMAIL_PORT = '2525'
+DEFAULT_FROM_EMAIL="teenzmcwamsie@gmail.com"

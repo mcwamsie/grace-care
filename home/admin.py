@@ -43,7 +43,11 @@ class MemberAdmin(UserAdmin):
             'classes': ('wide',),
             'fields': (
                 'profilePhoto',
-                'email', 'password1', 'password2', 'first_name', 'last_name', 'phone_number', 'address', 'role',
+                'email', 'password1', 'password2', 'first_name', 'last_name',
+                'sex',
+                'date_of_birth',
+                'phone_number',
+                'address', 'role',
                 'assembly'),
         }),
     )

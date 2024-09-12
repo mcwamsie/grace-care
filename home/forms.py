@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, Pass
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
-from home.models import Member, Church, Assembly
+from home.models import Member, Assembly
 
 
 class RegistrationForm(UserCreationForm):
@@ -36,11 +36,13 @@ class RegistrationForm(UserCreationForm):
             "email",
             "last_name",
             "assembly",
-            "phone_number"
+            "phone_number",
+            "sex",
+            "date_of_birth",
         ]
 
         widgets = {
-
+            'date_of_birth': forms.DateInput(attrs={'type': 'date'}),
             'email': forms.EmailInput(attrs={
                 'placeholder': 'Email'
             })
@@ -94,6 +96,54 @@ class UserPasswordChangeForm(PasswordChangeForm):
 
 # Member
 class MemberForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        queryset = Assembly.objects.none()
+        if "user" in kwargs:
+            print("here", kwargs.get("user"))
+            user = kwargs.pop("user")
+            queryset = Assembly.objects.filter(
+                Q(active=True) &
+                Q(church__active=True) &
+                Q(church=user.assembly.church)
+            )
+        super().__init__(*args, **kwargs)
+        self.fields["assembly"] = forms.ModelChoiceField(
+            queryset=queryset
+        )
+
+    first_name = forms.CharField(label=_('First Name'), max_length=50, required=True)
+    last_name = forms.CharField(label=_('Last Name'), max_length=50, required=True)
+    email = forms.EmailField(label=_('Email'), required=True)
+    phone_number = forms.CharField(label=_('Phone Number'), max_length=50, required=True)
+    # password1 = forms.CharField(
+    #     label=_("Password"),
+    #     widget=forms.PasswordInput(attrs={
+    #         'placeholder': 'Password'}),
+    # )
+    # password2 = forms.CharField(
+    #     label=_("Password Confirmation"),
+    #     widget=forms.PasswordInput(attrs={
+    #         'placeholder': 'Password Confirmation'}),
+    # )
+
+    address = forms.CharField(max_length=255, widget=forms.Textarea(attrs={
+        "rows": 3,
+    }))
+
     class Meta:
         model = Member
-        fields = "__all__"
+        exclude = ["password", "date_joined", "role"]
+        widgets = {
+            "email": forms.EmailInput(attrs={"type": "email", "placeholder": "Email"}),
+            "date_of_birth": forms.DateInput(attrs={"type": "date"}),
+        }
+
+
+class AssemblyForm(forms.ModelForm):
+    class Meta:
+        model = Assembly
+        exclude=["date_joined"]
+        widgets = {
+            "location": forms.Textarea(attrs={"rows": 3})
+        }

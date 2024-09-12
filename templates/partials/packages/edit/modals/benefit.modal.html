@@ -1,8 +1,0 @@
-{% extends "components/modal/form-modal.html" %}
-
-{% load member_tags %}
-{% block modal_body %}
-    <div id="new-form-container">
-        {% include "partials/app/packages/edit/modals/benefit.form.html" with form=object|package_benefit_form:benefit %}
-    </div>
-{% endblock %}

@@ -24,13 +24,13 @@ module.exports = {
                 "sans": "'Nunito', sans-serif"
             },
             colors: {
-                border: '#d3d2d2',
+                border: '#b8b8b8',
                 'soft-paper': '#fafafa',
                 'sidebar': '#222541',
                 paper: '#f2f3f3'
             },
             borderRadius:{
-                "md": "4px"
+                "md": "3px"
             }
         },
     },

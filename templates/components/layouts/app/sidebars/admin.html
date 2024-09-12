@@ -1,0 +1,32 @@
+{% load active_link_tags %}
+<li>
+    <a href="{% url "assembly_list" %}"
+       class="flex items-center px-4 h-8 text-white rounded-md hover:bg-gray-100/10 group {% active_link "assembly_list" "border-l-[4px] border-blue-600" %}">
+              <span class="flex items-center justify-center rounded-md h-8 w-8 {% active_link "assembly_list" "bg-blue-600" "bg-transparent" %}">
+                 
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-white/80 transition duration-75 group-hover:text-white ">
+                      <path d="M10 9h4"></path>
+                      <path d="M12 7v5"></path>
+                      <path d="M14 22v-4a2 2 0 0 0-4 0v4"></path>
+                      <path d="M18 22V5.618a1 1 0 0 0-.553-.894l-4.553-2.277a2 2 0 0 0-1.788 0L6.553 4.724A1 1 0 0 0 6 5.618V22"></path>
+                      <path d="m18 7 3.447 1.724a1 1 0 0 1 .553.894V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9.618a1 1 0 0 1 .553-.894L6 7"/></svg>
+                 
+              </span>
+        
+        <span class="ms-3">Assemblies</span>
+    </a>
+</li>
+<li>
+    <a href="{% url "member_list" %}"
+       class="flex items-center px-4 h-8 text-white rounded-md hover:bg-gray-100/10 group {% active_link "member_list" "border-l-[4px] border-blue-600" %}">
+              <span class="flex items-center justify-center rounded-md h-8 w-8 {% active_link "member_list" "bg-blue-600" "bg-transparent" %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-white/80 transition duration-75 group-hover:text-white ">
+                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="9" cy="7" r="4"></circle>
+                      <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                      <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                  </svg>
+              </span>
+        <span class="ms-3">Members</span>
+    </a>
+</li>

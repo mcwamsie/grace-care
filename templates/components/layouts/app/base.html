@@ -4,11 +4,11 @@
 <head>
     {% include 'includes/head.html' %}
     <title>{% block title %}{% endblock %} - Grace Care</title>
-    {% block extrastyle %}{% endblock extrastyle %}
+    {% block styles %}{% endblock styles %}
 </head>
 <body class="m-0 font-sans text-base antialiased font-normal leading-default bg-gray-50 text-slate-500  lg:max-w-full lg:max-h-full lg:overflow-hidden">
-{% include "components/layouts/app/sidebar.html" %}
 {% include "components/layouts/app/navbar.html" %}
+{% include "components/layouts/app/sidebar.html" %}
 <div class="p-4 pt-14 pr-2 flex flex-col flex-grow lg:pl-64 lg:max-w-full lg:max-h-full lg:overflow-hidden w-full h-full">
 {% block content %}{% endblock %}
 {#<button data-drawer-target="app-sidebar" data-drawer-toggle="app-sidebar" aria-controls="separator-sidebar"#}

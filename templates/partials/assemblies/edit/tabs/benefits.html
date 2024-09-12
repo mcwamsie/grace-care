@@ -160,7 +160,7 @@
     </div>
 </div>
 
-{% include 'partials/app/packages/edit/modals/benefit.modal.html' with modal_id="benefit-modal" benefit=None modal_title="New Benefit" %}
+{#{% include 'partials/members/edit/modals/benefit.modal.html' with modal_id="benefit-modal" benefit=None modal_title="New Benefit" %}#}
 {% for benefit in object.benefits.all %}
-    {% include 'partials/app/packages/edit/modals/benefit.modal.html' with modal_id="benefit-modal-"|concat:benefit.id modal_title="Update: "|concat:benefit.category|title %}
+{#    {% include 'partials/members/edit/modals/benefit.modal.html' with modal_id="benefit-modal-"|concat:benefit.id modal_title="Update: "|concat:benefit.category|title %}#}
 {% endfor %}

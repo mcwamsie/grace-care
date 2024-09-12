@@ -17,12 +17,16 @@
                 <form novalidate role="form" method="post">
                     {% csrf_token %}
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                        {% include "components/forms/field.html" with field=form.assembly css_classes="col-span-1 sm:col-span-2"%}
+                        
                         {% include "components/forms/non-field-errors.html" with field=form.first_name %}
                         {% include "components/forms/field.html" with field=form.first_name %}
                         {% include "components/forms/field.html" with field=form.last_name %}
+                        {% include "components/forms/field.html" with field=form.sex %}
+                        {% include "components/forms/field.html" with field=form.date_of_birth %}
                         {% include "components/forms/field.html" with field=form.phone_number %}
                         {% include "components/forms/field.html" with field=form.email %}
-                        {% include "components/forms/field.html" with field=form.assembly css_classes="col-span-1 sm:col-span-2"%}
+                        
                         {% include "components/forms/field.html" with field=form.password1 %}
                         {% include "components/forms/field.html" with field=form.password2 %}
                     </div>
@@ -31,7 +35,7 @@
                 </form>
             </div>
             <div class="border-black/12.5 rounded-b-2xl border-t-0 border-solid p-6 text-center pt-0 px-1 sm:px-6">
-                <p class="mx-auto mb-6 leading-normal text-sm">Already have an account? 
+                <p class="mx-auto mb-6 leading-normal text-sm">Already have an account?
                     <a href="{% url "login" %}" class="font-semibold text-transparent bg-clip-text bg-gradient-to-tl from-blue-500 to-violet-500">
                        Sign in
                     </a>
@@ -39,7 +43,7 @@
             </div>
         </div>
     {% endwith %}
-   
+
 {% endblock content %}
 
 {% block styles %}

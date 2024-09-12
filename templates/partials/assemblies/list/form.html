@@ -1,0 +1,30 @@
+{% load misc %}
+{% spaceless %}
+	<form id="new-member-form"
+      class="form flex flex-col gap-4"
+      novalidate
+      hx-post="{% url "assembly_add" %}"
+      class="form"
+      enctype="multipart/form-data"
+      hx-target="#new-member-form-container"
+      hx-swap="innerHTML" autocomplete="off"
+>
+    {% include "components/forms/non-field-errors.html" %}
+    {% csrf_token %}
+
+    {% with WIDGET_ERROR_CLASS='border-red-500' %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {% include 'components/forms/field.html' with field=form.name css_classes="col-span-2" %}
+            {% include 'components/forms/field.html' with field=form.location css_classes="col-span-2" %}
+            <div class="col-span-2">
+                {{ form.active.as_hidden }}
+                {{ form.church.as_hidden }}
+            </div>
+        </div>
+    {% endwith %}
+    {% include "components/forms/submit-button.html" %}
+</form>
+{% endspaceless %}
+<script>
+    $("select").selectize()
+</script>

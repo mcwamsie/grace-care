@@ -13,7 +13,7 @@ def random_uppercase_string_generator(size=3, chars=string.ascii_uppercase):
     return ''.join(random.choice(chars) for _ in range(size))
 
 
-def random_password_generator(size=10, chars=string.ascii_letters + string.digits + string.punctuation):
+def random_password_generator(size=10, chars=string.ascii_letters + string.digits + "!#$%&@"):
     return ''.join(random.choice(chars) for _ in range(size))
 
 

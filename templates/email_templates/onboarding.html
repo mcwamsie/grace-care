@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .email-container {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        .email-content {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            display: inline-block;
+            width: 100%;
+            max-width: 600px;
+        }
+        .email-header {
+            margin-bottom: 20px;
+        }
+        .email-body {
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-content">
+            <div class="email-header">
+                <img src="cid:logo" alt="{{ company.name | title }} Logo" style="width: 150px;" />
+            </div>
+            <div class="email-body">
+                <h2>Hello {{ user_name }}!</h2>
+                <p>Welcome to {{ company_name }}. We are excited to have you onboard.</p>
+                <p>Your account has been created successfully.</p>
+                <p><strong>Your login details:</strong></p>
+                <p>Username: {{ user_email }}</p>
+                <p>Password: {{ password }}</p>
+                <p>Please make sure to change your password after logging in.</p>
+                <p>Thank you,<br>The {{ company.name| title }} Team</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import render, redirect
@@ -6,8 +7,9 @@ from django.http import HttpResponse
 from django.urls import reverse
 
 from core import settings
+from home.emails import send_html_email_with_logo, send_welcome_email
 from home.forms import LoginForm, RegistrationForm, UserPasswordChangeForm, UserPasswordResetForm, UserSetPasswordForm, \
-    MemberForm
+    MemberForm, AssemblyForm
 from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetView, PasswordResetConfirmView
 from django.contrib.auth import logout, login, authenticate
 
@@ -15,7 +17,8 @@ from django.views.generic import CreateView, TemplateView, ListView, UpdateView
 
 from django.contrib.auth.decorators import login_required
 
-from home.models import Member
+from home.generators import random_password_generator
+from home.models import Member, Church, Assembly
 from home.search_filter import SearchFilter
 from home.utils import AccessRequiredMixin
 
@@ -24,11 +27,11 @@ from home.utils import AccessRequiredMixin
 class HomeView(TemplateView, AccessRequiredMixin):
     template_name = "pages/dashboard.html"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['parent'] = 'pages'
-        context['segment'] = 'index'
-        return context
+    def get(self, request, **kwargs):
+        if request.user.is_authenticated:
+            return redirect('dashboard')
+        else:
+            return redirect('login')
 
 
 @login_required(login_url="/accounts/login/")
@@ -119,11 +122,12 @@ class UserPasswordChangeView(PasswordChangeView):
     form_class = UserPasswordChangeForm
 
 
-# Members
 
-class MemberListView(AccessRequiredMixin, ListView, SearchFilter):
-    model = Member
-    template_name = "app/members/list.html"
+# ==================== Assemblies ==============
+
+class AssemblyListView(AccessRequiredMixin, ListView, SearchFilter):
+    model = Assembly
+    template_name = "app/assemblies/list.html"
     paginate_by = settings.PAGE_SIZE
     paginator_class = Paginator
     required_roles = ["admin"]
@@ -132,7 +136,7 @@ class MemberListView(AccessRequiredMixin, ListView, SearchFilter):
 
     def get_queryset(self):
         queryset = super().get_queryset().filter(
-            Q(assembly__church=self.request.user.assembly.church)
+            Q(church=self.request.user.assembly.church)
         )
         self.total_count = queryset.count()
         queryset = self.filter_queryset_here(request=self.request, queryset=queryset)
@@ -141,6 +145,82 @@ class MemberListView(AccessRequiredMixin, ListView, SearchFilter):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["total"] = self.total_count
+        context["form"] = AssemblyForm(initial={"active": True, "church": self.request.user.assembly.church})
+        return context
+
+class NewAssemblyView(AccessRequiredMixin, CreateView):
+    model = Member
+    form_class = AssemblyForm
+    template_name = "partials/assemblies/list/form.html"
+    required_roles = ["admin"]
+
+    def post(self, request, *args, **kwargs):
+        form = AssemblyForm(request.POST, request.FILES)
+        if form.is_valid():
+            assembly = form.save(commit=True)
+            messages.success(request, "Assembly has been successfully created")
+            url = reverse("assembly_update", kwargs={"pk": assembly.id})
+            response = render(request, "components/misc/redirect.html", {"url": url})
+            response["HX-Retarget"] = "#success-url"
+            return response
+        else:
+            print("errors", form.errors)
+            return self.render_to_response(context={"form": form})
+
+class EditAssemblyView(AccessRequiredMixin, UpdateView):
+    model = Assembly
+    form_class = AssemblyForm
+    template_name = "app/assemblies/edit.html"
+    required_roles = ["admin", "cashier"]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = AssemblyForm(instance=self.object)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        assembly = self.get_object()
+        form = AssemblyForm(request.POST, request.FILES, instance=assembly)
+
+        if form.is_valid():
+            member = form.save(commit=True)
+            messages.success(request, "Assembly has been successfully updated")
+            url = reverse("assembly_update", kwargs={"pk": member.id})
+            response = render(request, "components/misc/redirect.html", {"url": url})
+            response["HX-Retarget"] = "#success-url"
+            return response
+        else:
+            print("errors", form.errors)
+            return render(request, 'partials/assemblies/edit/modals/update.form.html',
+                          {'form': form, 'object': assembly})
+
+# ==================== Members ==============
+
+class MemberListView(AccessRequiredMixin, ListView, SearchFilter):
+    model = Member
+    template_name = "app/members/list.html"
+    paginate_by = settings.PAGE_SIZE
+    paginator_class = Paginator
+    required_roles = ["admin"]
+    search_fields = ["first_name", "last_name", "phone_number", "email"]
+    total_count = 0
+
+    def get_queryset(self):
+        queryset = super().get_queryset().filter(
+            Q(assembly__church=self.request.user.assembly.church)
+        )
+
+        if assembly_id := self.request.GET.get("assembly"):
+            queryset = queryset.filter(assembly_id=assembly_id)
+
+        self.total_count = queryset.count()
+        queryset = self.filter_queryset_here(request=self.request, queryset=queryset)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["total"] = self.total_count
+        context["form"] = MemberForm(initial={"is_active": True}, user=self.request.user)
         return context
 
 
@@ -148,14 +228,22 @@ class NewMemberView(AccessRequiredMixin, CreateView):
     model = Member
     form_class = MemberForm
     template_name = "partials/members/list/form.html"
-    required_roles = ["A"]
+    required_roles = ["admin"]
 
     def post(self, request, *args, **kwargs):
-        form = MemberForm(request.POST, request.FILES)
+        form = MemberForm(request.POST, request.FILES, user=self.request.user)
         if form.is_valid():
-            member = form.save(commit=True)
-            messages.success(request, "Package has been successfully created")
-            url = reverse("members_edit", kwargs={"pk": member.id})
+            member = form.save(commit=False)
+            member.role = "member"
+            random_password = random_password_generator(8)
+            # Set the password for the user
+            member.set_password(random_password)
+
+            member.save()
+
+            send_welcome_email(member.email, member.first_name, random_password, member.assembly.church)
+            messages.success(request, "Member has been successfully created")
+            url = reverse("member_update", kwargs={"pk": member.id})
             response = render(request, "components/misc/redirect.html", {"url": url})
             response["HX-Retarget"] = "#success-url"
             return response
@@ -168,20 +256,37 @@ class EditMemberView(AccessRequiredMixin, UpdateView):
     model = Member
     form_class = MemberForm
     template_name = "app/members/edit.html"
-    required_roles = ["D", "A"]
+    required_roles = ["admin", "cashier"]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = MemberForm(user=self.request.user, instance=self.object)
+        return context
 
     def post(self, request, *args, **kwargs):
-        package = self.get_object()
-        form = MemberForm(request.POST, request.FILES, instance=package)
+        member = self.get_object()
+        form = MemberForm(request.POST, request.FILES, instance=member, user=self.request.user)
 
         if form.is_valid():
-            package = form.save(commit=True)
-            messages.success(request, "Package has been successfully updated")
-            url = reverse("packages_edit", kwargs={"pk": package.id})
+            member = form.save(commit=True)
+            messages.success(request, "Member has been successfully updated")
+            url = reverse("member_update", kwargs={"pk": member.id})
             response = render(request, "components/misc/redirect.html", {"url": url})
             response["HX-Retarget"] = "#success-url"
             return response
         else:
             print("errors", form.errors)
             return render(request, 'partials/members/edit/modals/update.form.html',
-                          {'form': form, 'object': package})
+                          {'form': form, 'object': member})
+
+#==================== End Members ==============
+def send_test_email(request):
+    subject = 'Test Email'
+    message = 'This is a test email sent from Django.'
+    from_email = settings.DEFAULT_FROM_EMAIL
+    recipient_list = ['recipient@example.com']
+    church = Church.objects.filter(logo__isnull=False).first()
+    # Send the email
+    send_html_email_with_logo('recipient@example.com', "John", church)
+
+    return HttpResponse('Test email sent successfully!')

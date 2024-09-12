@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from django.utils import timezone
+from month.models import MonthField
 from phonenumber_field.modelfields import PhoneNumberField
 
 
@@ -9,7 +10,9 @@ class Church(models.Model):
     address = models.TextField()
     logo = models.ImageField(upload_to='church_logos/', null=True, blank=True)
     active = models.BooleanField(default=True)
-
+    monthlySubscriptionFee = models.DecimalField(default=0, decimal_places=2, max_digits=11,
+                                                 verbose_name="Monthly Subscription Fee")
+    date_joined = models.DateTimeField(default=timezone.now)
     def __str__(self):
         return self.name
 
@@ -24,9 +27,10 @@ class Assembly(models.Model):
     church = models.ForeignKey(Church, related_name='assemblies', on_delete=models.CASCADE)
     location = models.CharField(max_length=255)
     active = models.BooleanField(default=True)
+    date_joined = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return self.church.name.upper() + "/" + self.name.upper()
+        return self.church.name.upper() + " / " + self.name.upper()
 
     class Meta:
         ordering = ['name']
@@ -62,11 +66,12 @@ class Member(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=30, blank=True)
     last_name = models.CharField(max_length=30, blank=True)
     phone_number = PhoneNumberField(null=True, blank=True)  # Use PhoneNumberField here
-    address = models.CharField(max_length=255, null=True, blank=True)
+    address = models.TextField(max_length=255, null=True, blank=True)
     assembly = models.ForeignKey(Assembly, null=True, blank=True, related_name='members', on_delete=models.CASCADE)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)  # Admin rights
     date_joined = models.DateTimeField(default=timezone.now)
+    date_of_birth = models.DateField(default=timezone.now)
     ROLE_CHOICES = [
         ('admin', 'Admin'),
         ('cashier', 'Cashier'),
@@ -74,6 +79,13 @@ class Member(AbstractBaseUser, PermissionsMixin):
     ]
     profilePhoto = models.ImageField(upload_to='member-profiles/', null=True, blank=True)
     role = models.CharField(max_length=255, choices=ROLE_CHOICES, default='admin')
+    SEX_CHOICES = [
+        ("Male", "Male"),
+        ("Female", "Female"),
+        ("Other", "Other"),
+    ]
+    sex = models.CharField(max_length=255, choices=SEX_CHOICES, default="Other")
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = [
         "first_name",
@@ -87,3 +99,105 @@ class Member(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.first_name + " " + self.last_name
+
+    class Meta:
+        ordering = ["last_name", "first_name"]
+        verbose_name = "Member"
+        verbose_name_plural = "Members"
+
+
+class MonthlySubscription(models.Model):
+    member = models.ForeignKey(Member, related_name='subscriptions', on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    subscription_month = MonthField()
+    is_paid = models.BooleanField(default=False)
+    owing_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)  # Track owing amount
+
+    def __str__(self):
+        return f"{str(self.member)} - {self.subscription_month.strftime('%B %Y')}"
+
+    def mark_as_paid(self, payment_amount):
+        """
+        Mark the subscription as paid or update the owing amount.
+        """
+        if payment_amount >= self.owing_amount:
+            self.is_paid = True
+            self.owing_amount = 0
+        else:
+            self.owing_amount -= payment_amount
+        self.save()
+
+
+class PaymentMethod(models.Model):
+    name = models.CharField(max_length=100)
+    incoming_payments = models.BooleanField(default=False, verbose_name="Incoming Payments")
+    outgoing_payments = models.BooleanField(default=False, verbose_name="Outgoing Payments")
+    available_balance = models.DecimalField(default=0, decimal_places=2, max_digits=11,
+                                            verbose_name="Available_Balance")
+    total_balance = models.DecimalField(default=0, decimal_places=2, max_digits=11, verbose_name="Total Balance")
+    accountNumber = models.CharField(max_length=100, verbose_name="Account Number")
+
+    def __str__(self):
+        return self.name
+
+
+class Payment(models.Model):
+    member = models.ForeignKey(Member, related_name='payments', on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    date = models.DateField()
+    PAYMENT_TYPE_CHOICES = [
+        ("Offering", "Offering"),
+        ("Tithe", "Tithe"),
+        ("Monthly Subscription", "Monthly Subscription"),
+        ("Fundraising Contribution", "Fundraising Contribution"),
+    ]
+    type = models.CharField(max_length=255)
+    payment_method = models.ForeignKey(PaymentMethod, on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return f"{str(self.member)} - {self.amount} - {self.date}"
+
+    def apply_to_subscriptions(self):
+        """
+        Apply payment to earliest outstanding subscriptions.
+        """
+        subscriptions = MonthlySubscription.objects.filter(member=self.member, is_paid=False).order_by(
+            'subscription_month')
+        remaining_amount = self.amount
+
+        for subscription in subscriptions:
+            if remaining_amount <= 0:
+                break
+
+            if remaining_amount >= subscription.owing_amount:
+                # Pay off the whole owing amount for this month
+                remaining_amount -= subscription.owing_amount
+                subscription.mark_as_paid(subscription.owing_amount)
+            else:
+                # Partial payment, reduce the owing amount
+                subscription.mark_as_paid(remaining_amount)
+                remaining_amount = 0
+
+
+class FundraisingProject(models.Model):
+    church = models.ForeignKey(Church, related_name='fundraising_projects', on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    target_amount = models.DecimalField(max_digits=15, decimal_places=2)
+    raised_amount = models.DecimalField(max_digits=15, decimal_places=2, default=0)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.title
+
+
+class FundraisingContribution(models.Model):
+    project = models.ForeignKey(FundraisingProject, related_name='contributions', on_delete=models.CASCADE)
+    payment = models.OneToOneField(Payment, related_name='fundraising_contributions', on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    date = models.DateField()
+
+    def __str__(self):
+        return f"{self.payment.member} - {self.amount} - {self.project.title}"

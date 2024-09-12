@@ -2,12 +2,11 @@
 {% load misc %}
 {% block content %}
     <div class="flex-grow gap-4 lg:gap-0 pr-2 pt-2 flex flex-col max-h-full max-w-full overflow-y-auto">
-        {% include "partials/members/edit/breadcrumb.html" %}
+        {% include "partials/assemblies/edit/breadcrumb.html" %}
         <div class="relative flex-grow bg-white border border-border lg:overflow-hidden lg:max-h-full max-w-full flex shadow-lg gap-0 flex-col">
-            {% include "partials/members/edit/nav-list.html" %}
+            {% include "partials/assemblies/edit/nav-list.html" %}
             <div id="default-tab-content" class="flex flex-col flex-grow lg:max-w-full lg:overflow-y-auto">
-                {% include "partials/members/edit/tabs/overview.html" %}
-                {% include "partials/members/edit/tabs/benefits.html" %}
+                {% include "partials/assemblies/edit/tabs/overview.html" %}
             </div>
         </div>
     </div>
@@ -24,6 +23,6 @@
 {% endblock %}
 
 {% block modals %}
-    {% include "partials/members/edit/modals/update.modal.html" with modal_id="update-modal" modal_title="Update: "|concat:object|title %}
+    {% include "partials/assemblies/edit/modals/update.modal.html" with modal_id="update-modal" modal_title="Update: "|concat:object.name|title %}
 {% endblock %}
 
