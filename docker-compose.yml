@@ -16,6 +16,7 @@ services:
     ports:
       - "5085:5085"
     volumes:
+      - ./data:/app/db
       - .:/app
       - ./nginx:/etc/nginx/conf.d
       - static_volume:/app/staticfiles
