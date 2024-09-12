@@ -16,11 +16,11 @@ services:
     ports:
       - "5085:5085"
     volumes:
-      - ./data:/app/db
       - .:/app
       - ./nginx:/etc/nginx/conf.d
       - static_volume:/app/staticfiles
       - media_volume:/app/mediafiles
+      - my_sqlite_data:/app/db
     networks:
       - web_network
     depends_on:
@@ -28,6 +28,7 @@ services:
 volumes:
   static_volume:
   media_volume:
+  my_sqlite_data:
 networks:
   db_network:
     driver: bridge
