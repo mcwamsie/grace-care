@@ -3239,6 +3239,10 @@ th, td {
   --tw-gradient-to: #3f3f46 var(--tw-gradient-to-position);
 }
 
+.to-blue-600 {
+  --tw-gradient-to: #1C64F2 var(--tw-gradient-to-position);
+}
+
 .bg-contain {
   background-size: contain;
 }
