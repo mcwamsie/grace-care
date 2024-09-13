@@ -15,7 +15,7 @@ class Church(models.Model):
     date_joined = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return self.name
+        return self.name.upper()
 
     class Meta:
         ordering = ['name']
@@ -128,6 +128,8 @@ class MonthlySubscription(models.Model):
             self.owing_amount -= payment_amount
         self.save()
 
+    class Meta:
+        unique_together=[("member", "subscription_month")]
 
 CURRENCY_CHOICES = [
     ("$", "USD"),
@@ -148,7 +150,7 @@ class PaymentMethod(models.Model):
     active = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.name
+        return self.name.upper()
 
     class Meta:
         unique_together = [("church", "name")]
@@ -157,16 +159,18 @@ class PaymentMethod(models.Model):
 
 
 class Payment(models.Model):
-    member = models.ForeignKey(Member, related_name='payments', on_delete=models.CASCADE)
+    member = models.ForeignKey(Member, null=True, blank=True, related_name='payments', on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     date = models.DateField()
     PAYMENT_TYPE_CHOICES = [
+        ("Initial Balance", "Initial Balance"),
         ("Offering", "Offering"),
         ("Tithe", "Tithe"),
+        ("Donation", "Donation"),
         ("Monthly Subscription", "Monthly Subscription"),
         ("Fundraising Contribution", "Fundraising Contribution"),
     ]
-    type = models.CharField(max_length=255)
+    type = models.CharField(max_length=255, choices=PAYMENT_TYPE_CHOICES)
     payment_method = models.ForeignKey(PaymentMethod, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
@@ -216,7 +220,7 @@ class FundraisingProject(models.Model):
 
 class FundraisingContribution(models.Model):
     project = models.ForeignKey(FundraisingProject, related_name='contributions', on_delete=models.CASCADE)
-    payment = models.OneToOneField(Payment, related_name='fundraising_contributions', on_delete=models.CASCADE)
+    payment = models.OneToOneField(Payment, related_name='fundraising_contribution', on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     date = models.DateField()
 

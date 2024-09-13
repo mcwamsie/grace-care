@@ -1,14 +1,31 @@
 {% load active_link_tags %}
 <li>
-                <a href="{% url "member_list" %}"
-                   class="flex items-center px-4 h-8 text-white rounded-md hover:bg-gray-100/10 group {% active_link "member_list" "border-l-[4px] border-blue-600" %}">
-              <span class="flex items-center justify-center rounded-md h-8 w-8 {% active_link "member_list" "bg-blue-600" "bg-transparent" %}">
-                   <svg class="w-4 h-4 text-white/80 transition duration-75 group-hover:text-white " aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 21">
-                  <path d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z"></path>
-                  <path d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z"></path>
-               </svg>
+    <a href="{% url "subscriptions_list" %}"
+       class="flex items-center px-4 h-8 text-white rounded-md hover:bg-gray-100/10 group {% active_link "subscriptions_list" "border-l-[4px] border-blue-600" %}">
+              <span class="flex items-center justify-center rounded-md h-8 w-8 {% active_link "subscriptions_list" "bg-blue-600" "bg-transparent" %}">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-white/80 transition duration-75 group-hover:text-white ">
+                      <path d="M8 2v4"></path>
+                      <path d="M16 2v4"></path>
+                      <path d="M21 14V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8"></path>
+                      <path d="M3 10h18"></path><path d="m16 20 2 2 4-4"></path>
+                  </svg>
+                  
               </span>
-                    <span class="ms-3">Members</span>
-                </a>
-            </li>
+        <span class="ms-3"> Subscriptions</span>
+    </a>
+</li>
+<li>
+    <a href="{% url "payments_list" %}"
+       class="flex items-center px-4 h-8 text-white rounded-md hover:bg-gray-100/10 group {% active_link "payments_list" "border-l-[4px] border-blue-600" %}">
+              <span class="flex items-center justify-center rounded-md h-8 w-8 {% active_link "payments_list" "bg-blue-600" "bg-transparent" %}">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-white/80 transition duration-75 group-hover:text-white ">
+                      <path d="M8 2v4"></path>
+                      <path d="M16 2v4"></path>
+                      <path d="M21 14V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8"></path>
+                      <path d="M3 10h18"></path><path d="m16 20 2 2 4-4"></path>
+                  </svg>
+                  
+              </span>
+        <span class="ms-3">Payments</span>
+    </a>
+</li>

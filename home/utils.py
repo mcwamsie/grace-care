@@ -1,10 +1,14 @@
 import datetime
 import json
 
+import month
 from django.contrib.auth.mixins import AccessMixin
+from django.db.models import Q
 from django.shortcuts import redirect
 from django.template import Context
 from django.utils import translation
+
+from home.models import Member, MonthlySubscription
 
 try:
     from django.apps.registry import apps
@@ -487,3 +491,25 @@ class AccessRequiredMixin(AccessMixin):
             messages.error(request, "You are not allowed to access this module.")
             return redirect("dashboard")
         return super().dispatch(request, *args, **kwargs)
+
+def calculateContributions(member: Member, update=False):
+    dateJoined = member.date_joined
+    startingMonth = month.Month(dateJoined.year, dateJoined.month)
+    now = datetime.datetime.now()
+
+    latestSubscription = MonthlySubscription.objects.filter(
+        Q(member=member)
+    ).order_by('-subscription_month').first()
+
+    if latestSubscription and not update:
+        startingMonth = latestSubscription.subscription_month + 1
+    subscriptionFee = member.assembly.church.monthlySubscriptionFee
+    currentMonth = month.Month(now.year, now.month)
+
+    for item in startingMonth.range(currentMonth):
+        subscription, created = MonthlySubscription.objects.get_or_create(
+            member=member,
+            subscription_month=item,
+            amount=subscriptionFee,
+            owing_amount=subscriptionFee,
+        )

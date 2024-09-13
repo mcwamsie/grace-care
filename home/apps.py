@@ -7,4 +7,4 @@ class HomeConfig(AppConfig):
 
     def ready(self):
         pass
-        #import home.signals  # Import signals so they get registered
+        import home.signals  # Import signals so they get registered

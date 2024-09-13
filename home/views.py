@@ -1,3 +1,6 @@
+import datetime
+
+import month
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
@@ -9,18 +12,19 @@ from django.urls import reverse
 from core import settings
 from home.emails import send_html_email_with_logo, send_welcome_email
 from home.forms import LoginForm, RegistrationForm, UserPasswordChangeForm, UserPasswordResetForm, UserSetPasswordForm, \
-    MemberForm, AssemblyForm, FundraisingProjectForm, PaymentMethodForm
+    MemberForm, AssemblyForm, FundraisingProjectForm, PaymentMethodForm, PaymentForm
 from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetView, PasswordResetConfirmView
 from django.contrib.auth import logout, login, authenticate
 
-from django.views.generic import CreateView, TemplateView, ListView, UpdateView
+from django.views.generic import CreateView, TemplateView, ListView, UpdateView, DetailView
 
 from django.contrib.auth.decorators import login_required
 
 from home.generators import random_password_generator
-from home.models import Member, Church, Assembly, FundraisingProject, PaymentMethod
+from home.models import Member, Church, Assembly, FundraisingProject, PaymentMethod, MonthlySubscription, Payment, \
+    FundraisingContribution
 from home.search_filter import SearchFilter
-from home.utils import AccessRequiredMixin
+from home.utils import AccessRequiredMixin, calculateContributions
 
 
 # Create your views here.
@@ -46,14 +50,14 @@ def dashboard(request):
 class DashboardView(AccessRequiredMixin, TemplateView):
     template_name = "app/dashboard.html"
 
-
-@login_required(login_url="/accounts/login/")
-def billing(request):
-    context = {
-        'parent': 'pages',
-        'segment': 'billing'
-    }
-    return render(request, 'pages/billing.html', context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['members'] = Member.objects.filter(Q(assembly__church=self.request.user.assembly.church)).count()
+        context['assemblies'] = Assembly.objects.filter(Q(church=self.request.user.assembly.church)).count()
+        context['projects'] = FundraisingProject.objects.filter(Q(church=self.request.user.assembly.church)).count()
+        context['fundraisingProjects'] = FundraisingProject.objects.filter(Q(church=self.request.user.assembly.church))
+        context['methods'] = PaymentMethod.objects.filter(Q(church=self.request.user.assembly.church))
+        return context
 
 
 @login_required(login_url="/accounts/login/")
@@ -436,6 +440,151 @@ class EditPaymentMethodView(AccessRequiredMixin, UpdateView):
             return render(request, 'partials/methods/edit/modals/update.form.html',
                           {'form': form, 'object': method})
 
+
+# ==================== End Payment Methods======
+# =================== Monthly Subscription ==========
+
+class SubscriptionListView(AccessRequiredMixin, ListView, SearchFilter):
+    model = Member
+    template_name = "app/subscriptions/list.html"
+    paginate_by = settings.PAGE_SIZE
+    paginator_class = Paginator
+    required_roles = ["admin", "cashier"]
+    search_fields = ["first_name", "last_name", "phone_number", "email"]
+    total_count = 0
+
+    def get_queryset(self):
+        queryset = super().get_queryset().filter(
+            Q(assembly__church=self.request.user.assembly.church)
+        )
+
+        if assembly_id := self.request.GET.get("assembly"):
+            queryset = queryset.filter(assembly_id=assembly_id)
+
+        self.total_count = queryset.count()
+        queryset = self.filter_queryset_here(request=self.request, queryset=queryset)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        today = datetime.datetime.today()
+        m = month.Month(today.year, today.month)
+        m2 = m - 4
+
+        last5Months = m2.range(m)
+        # self.last5Months = self.last5Months
+
+        last5Months.reverse()
+        if self.request.GET.get("refresh"):
+            for member in self.get_queryset():
+                calculateContributions(member=member)
+        subscriptions = MonthlySubscription.objects.filter(
+            Q(member__in=self.get_queryset()) &
+            Q(subscription_month__in=last5Months)
+        )
+
+        #print("subscriptions", subscriptions)
+
+        context = super().get_context_data(**kwargs)
+        context["subscriptions"] = subscriptions
+        context["last5Months"] = last5Months
+        context["total"] = self.total_count
+        context["form"] = MemberForm(initial={"is_active": True}, user=self.request.user)
+        return context
+
+
+# ==================== End Monthly Subscription======
+# =================== Payments ======================
+
+class PaymentListView(AccessRequiredMixin, ListView, SearchFilter):
+    model = Payment
+    template_name = "app/payments/list.html"
+    paginate_by = settings.PAGE_SIZE
+    paginator_class = Paginator
+    required_roles = ["admin", "cashier"]
+    search_fields = ["member__first_name", "member__last_name"]
+    total_count = 0
+
+    def get_queryset(self):
+        queryset = super().get_queryset().filter(
+            Q(member__assembly__church=self.request.user.assembly.church)
+        )
+        self.total_count = queryset.count()
+        queryset = self.filter_queryset_here(request=self.request, queryset=queryset)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["total"] = self.total_count
+        context["form"] = PaymentForm(initial={"active": True}, user=self.request.user)
+        return context
+
+
+class NewPaymentView(AccessRequiredMixin, CreateView):
+    model = Payment
+    form_class = PaymentForm
+    template_name = "partials/payments/list/form.html"
+    required_roles = ["admin"]
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST, request.FILES, user=self.request.user)
+        if form.is_valid():
+            payment = form.save(commit=True)
+            if payment.type == "Fundraising Contribution":
+                project = form.cleaned_data["funderRaisingProject"]
+                FundraisingContribution.objects.create(
+                    project=project,
+                    payment=payment,
+                    amount=payment.amount,
+                    date=payment.date,
+                )
+                project.raised_amount += payment.amount
+                project.save()
+            elif payment.type == "Monthly Subscription":
+                payment.apply_to_subscriptions()
+
+            payment.payment_method.available_balance += payment.amount
+            payment.payment_method.total_balance += payment.amount
+            payment.payment_method.save()
+
+            messages.success(request, self.model._meta.verbose_name + " has been successfully created")
+            url = reverse("payments_list")
+            response = render(request, "components/misc/redirect.html", {"url": url})
+            response["HX-Retarget"] = "#success-url"
+            return response
+        else:
+            print("errors", form.errors)
+            return self.render_to_response(context={"form": form})
+
+
+class EditPaymentView(AccessRequiredMixin, DetailView):
+    model = Payment
+    # form_class = PaymentMethodForm
+    template_name = "app/payments/edit.html"
+    required_roles = ["admin", "cashier"]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # context["form"] = self.form_class(instance=self.object, initial={"initial_balance": 0})
+        return context
+
+    def post(self, request, *args, **kwargs):
+        method = self.get_object()
+        form = self.form_class(request.POST, request.FILES, instance=method)
+
+        if form.is_valid():
+            method = form.save(commit=True)
+            messages.success(request, self.model._meta.verbose_name + " has been successfully updated")
+            url = reverse("methods_update", kwargs={"pk": method.id})
+            response = render(request, "components/misc/redirect.html", {"url": url})
+            response["HX-Retarget"] = "#success-url"
+            return response
+        else:
+            print("errors", form.errors)
+            return render(request, 'partials/methods/edit/modals/update.form.html',
+                          {'form': form, 'object': method})
+
+
+# =================== End Payments =================
 
 def send_test_email(request):
     subject = 'Test Email'

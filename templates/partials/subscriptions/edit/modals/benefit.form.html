@@ -1,0 +1,52 @@
+<form id="new-member-form"
+      class="form flex flex-col gap-4"
+      novalidate
+        {% if benefit %}
+      hx-post="{% url "packages_benefits_update" pk=benefit.id %}"
+        {% else %}
+      hx-post="{% url "packages_benefits_add" %}"
+        {% endif %}
+
+      class="form"
+      enctype="multipart/form-data"
+      hx-target="#new-form-container"
+      hx-swap="innerHTML" autocomplete="off"
+>
+    {% include "components/forms/non-field-errors.html" %}
+    {% csrf_token %}
+
+    {% with WIDGET_ERROR_CLASS='border-red-500' %}
+        <div class="grid grid-cols-2 gap-4">
+            {% if not benefit %}
+                {% include 'components/forms/field.html' with field=form.category css_classes="col-span-2" %}
+            {% endif %}
+            {% include 'components/forms/field.html' with field=form.globalLimit css_classes="col-span-2 sm:col-span-1" %}
+            {% include 'components/forms/field.html' with field=form.maxTotalVisits css_classes="col-span-2 sm:col-span-1" %}
+            {% include 'components/forms/field.html' with field=form.maxNetworkVisits css_classes="col-span-2 sm:col-span-1" %}
+            {% include 'components/forms/field.html' with field=form.maxOnlineVisits css_classes="col-span-2 sm:col-span-1" %}
+            {% include 'components/forms/field.html' with field=form.maxNotNetworkVisits css_classes="col-span-2 sm:col-span-1" %}
+            {% include 'components/forms/field.html' with field=form.maxThirdPartyVisits css_classes="col-span-2 sm:col-span-1" %}
+            {% include 'components/forms/field.html' with field=form.highestGrade css_classes="col-span-2 sm:col-span-1" %}
+            {% include 'components/forms/field.html' with field=form.waitingPeriodDays css_classes="col-span-2 sm:col-span-1" %}
+            {% include 'components/forms/field.html' with field=form.waitingPeriodMonths css_classes="col-span-2 sm:col-span-1" %}
+            {% include 'components/forms/field.html' with field=form.waitingPeriodYears css_classes="col-span-2 sm:col-span-1" %}
+            {% include 'components/forms/field.html' with field=form.requiresAuth css_classes="col-span-2" %}
+            {% if benefit %}
+                {% include 'components/forms/field.html' with field=form.active css_classes="col-span-2" %}
+            {% endif %}
+            <div class="col-span-2">
+                {{ form.package }}
+                {% if benefit %}
+                    {{ form.category }}
+                {% else %}
+                    {{ form.active }}
+                {% endif %}
+            </div>
+        </div>
+    {% endwith %}
+    {% include "components/forms/submit-button.html" %}
+</form>
+
+<script>
+    $("select").selectize()
+</script>

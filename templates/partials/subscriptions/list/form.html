@@ -1,0 +1,37 @@
+{% load misc %}
+{% spaceless %}
+	<form id="new-member-form"
+      class="form flex flex-col gap-4"
+      novalidate
+      hx-post="{% url "member_add" %}"
+      class="form"
+      enctype="multipart/form-data"
+      hx-target="#new-member-form-container"
+      hx-swap="innerHTML" autocomplete="off"
+>
+    {% include "components/forms/non-field-errors.html" %}
+    {% csrf_token %}
+
+    {% with WIDGET_ERROR_CLASS='border-red-500' %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {% include 'components/forms/field.html' with field=form.profilePhoto css_classes="col-span-2" %}
+            {% include 'components/forms/field.html' with field=form.assembly css_classes="col-span-2" %}
+            {% include 'components/forms/field.html' with field=form.first_name css_classes="col-span-1" %}
+            {% include 'components/forms/field.html' with field=form.last_name css_classes="col-span-1" %}
+            {% include 'components/forms/field.html' with field=form.sex css_classes="col-span-1" %}
+            {% include 'components/forms/field.html' with field=form.date_of_birth css_classes="col-span-1" %}
+            {% include 'components/forms/field.html' with field=form.phone_number css_classes="col-span-1" %}
+            {% include 'components/forms/field.html' with field=form.email css_classes="col-span-1" %}
+            {% include 'components/forms/field.html' with field=form.address css_classes="col-span-2" %}
+            <div class="col-span-2">
+                {{ form.is_active.as_hidden }}
+
+            </div>
+        </div>
+    {% endwith %}
+    {% include "components/forms/submit-button.html" %}
+</form>
+{% endspaceless %}
+<script>
+    $("select").selectize()
+</script>

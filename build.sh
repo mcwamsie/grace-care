@@ -6,11 +6,7 @@ python -m pip install --upgrade pip
 
 pip install -r requirements.txt
 
-mkdir -p mediafiles
-mkdir -p db
-
-# Collect static files
-python manage.py collectstatic --noinput
+mkdir /opt/render/project/src/mediafiles
 
 python manage.py makemigrations
 
@@ -18,7 +14,13 @@ python manage.py makemigrations
 python manage.py migrate
 
 python manage.py createsuperadmin
+
+# Collect static files
+python manage.py collectstatic --noinput
+
 # compile SCSS
 yarn
 yarn build
 yarn min-css
+
+

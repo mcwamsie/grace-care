@@ -4,15 +4,16 @@ from django.urls import path
 from home.views import HomeView, MemberListView, EditMemberView, NewMemberView, UserLoginView, logout_view, \
     UserRegistration, UserPasswordChangeView, \
     FundraisingProjectListView, NewFundraisingProjectView, EditFundraisingProjectView, \
-    UserPasswordResetView, UserPasswordResetConfirmView, billing, DashboardView, send_test_email, AssemblyListView, \
-    NewAssemblyView, EditAssemblyView, PaymentMethodListView, NewPaymentMethodView, EditPaymentMethodView
+    UserPasswordResetView, UserPasswordResetConfirmView, DashboardView, send_test_email, AssemblyListView, \
+    NewAssemblyView, EditAssemblyView, PaymentMethodListView, NewPaymentMethodView, EditPaymentMethodView, \
+    SubscriptionListView, PaymentListView, NewPaymentView, EditPaymentView
 
 urlpatterns = [
     path('test/', send_test_email, name='test'),
     path('', HomeView.as_view(), name='index'),
-    path('billing', billing, name='billing'),
-    path('profile', billing, name='profile'),
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
+
+    path('monthly-subscriptions/', SubscriptionListView.as_view(), name='subscriptions_list'),
 
     path('members/', MemberListView.as_view(), name='member_list'),
     path('members/new/', NewMemberView.as_view(), name='member_add'),
@@ -32,6 +33,11 @@ urlpatterns = [
     path('payment-methods/', PaymentMethodListView.as_view(), name='methods_list'),
     path('payment-methods/new/', NewPaymentMethodView.as_view(), name='methods_add'),
     path('payment-methods/update/<int:pk>/', EditPaymentMethodView.as_view(), name='methods_update'),
+
+    # Payments
+    path('payments/', PaymentListView.as_view(), name='payments_list'),
+    path('payments/new/', NewPaymentView.as_view(), name='payments_add'),
+    path('payments/update/<int:pk>/', EditPaymentView.as_view(), name='payments_update'),
 
     # Authentication
     path('accounts/login/', UserLoginView.as_view(), name='login'),

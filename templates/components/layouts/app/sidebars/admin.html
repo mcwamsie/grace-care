@@ -48,9 +48,42 @@
        class="flex items-center px-4 h-8 text-white rounded-md hover:bg-gray-100/10 group {% active_link "methods_list" "border-l-[4px] border-blue-600" %}">
               <span class="flex items-center justify-center rounded-md h-8 w-8 {% active_link "methods_list" "bg-blue-600" "bg-transparent" %}">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-white/80 transition duration-75 group-hover:text-white ">
-                      <rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>
+                      <rect width="20" height="12" x="2" y="6" rx="2"></rect>
+                      <circle cx="12" cy="12" r="2"></circle>
+                      <path d="M6 12h.01M18 12h.01"></path>
+                  </svg>
                   
               </span>
         <span class="ms-3">Payment Methods</span>
+    </a>
+</li>
+<li>
+    <a href="{% url "subscriptions_list" %}"
+       class="flex items-center px-4 h-8 text-white rounded-md hover:bg-gray-100/10 group {% active_link "subscriptions_list" "border-l-[4px] border-blue-600" %}">
+              <span class="flex items-center justify-center rounded-md h-8 w-8 {% active_link "subscriptions_list" "bg-blue-600" "bg-transparent" %}">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-white/80 transition duration-75 group-hover:text-white ">
+                      <path d="M8 2v4"></path>
+                      <path d="M16 2v4"></path>
+                      <path d="M21 14V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8"></path>
+                      <path d="M3 10h18"></path><path d="m16 20 2 2 4-4"></path>
+                  </svg>
+                  
+              </span>
+        <span class="ms-3"> Subscriptions</span>
+    </a>
+</li>
+<li>
+    <a href="{% url "payments_list" %}"
+       class="flex items-center px-4 h-8 text-white rounded-md hover:bg-gray-100/10 group {% active_link "payments_list" "border-l-[4px] border-blue-600" %}">
+              <span class="flex items-center justify-center rounded-md h-8 w-8 {% active_link "payments_list" "bg-blue-600" "bg-transparent" %}">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-white/80 transition duration-75 group-hover:text-white ">
+                      <path d="M8 2v4"></path>
+                      <path d="M16 2v4"></path>
+                      <path d="M21 14V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8"></path>
+                      <path d="M3 10h18"></path><path d="m16 20 2 2 4-4"></path>
+                  </svg>
+                  
+              </span>
+        <span class="ms-3">Payments</span>
     </a>
 </li>

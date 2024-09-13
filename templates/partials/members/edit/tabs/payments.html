@@ -1,0 +1,49 @@
+{% load misc %}
+<div class="hidden flex flex-grow" id="payments" role="tabpanel"
+     aria-labelledby="payments-tab">
+    <div class="flex flex-col flex-grow max-w-full overflow-x-auto">
+        {% if object.payments.count == 0 %}
+            {% include "components/misc/empty-state.html" with title="No payments yet" %}
+        {% else %}
+            <table class="w-full">
+                <thead class="text-xs font-bold text-gray-700 uppercase">
+                <tr class="sticky top-0 bg-paper">
+                    <th scope="col">Type</th>
+                    <th scope="col">Payment Method</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Project</th>
+                </tr>
+               
+                </thead>
+                <tbody>
+                {% for payment in object.payments.all %}
+                    <tr>
+                        <td class="font-bold">{{ payment.get_type_display | upper }}</td>
+                        <td class="text-left">{{ payment.payment_method.name | upper }}</td>
+                    
+                        <td class="text-right">
+                            {{ payment.payment_method.currency  }}
+                            {{ payment.amount | floatformat:"2g"  }}
+                        </td>
+                        <td class="text-right">{{ payment.date | upper }}</td>
+                        {% if payment.fundraising_contribution %}
+            	<td class="text-left">
+                    {{ payment.fundraising_contribution.project.title | title }}
+                </td>
+                {% else %}
+                <td class="text-center">----</td>
+            {% endif %} 
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+        {% endif %}
+    </div>
+</div>
+
+{#{% include 'partials/members/edit/modals/payment.modal.html' with modal_id="payment-modal" payment=None modal_title="New payment" %}#}
+{% for payment in object.payments.all %}
+{#    {% include 'partials/members/edit/modals/payment.modal.html' with modal_id="payment-modal-"|concat:payment.id modal_title="Update: "|concat:payment.category|title %}#}
+{% endfor %}

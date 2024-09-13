@@ -7,7 +7,7 @@
             <th scope="col">Name</th>
             <th scope="col">Sex</th>
             <th scope="col">Date Of Birth</th>
-            <th scope="col">Joined At</th>
+            <th scope="col">Role</th>
             <th scope="col">Assembly</th>
             <th scope="col">Email Address</th>
             <th scope="col">Phone</th>
@@ -32,7 +32,7 @@
                     {{ member.date_of_birth | date:"d, M, Y" }}
                 </td>
                 <td class="text-right">
-                     {{ member.date_joined | date:"d, M, Y" }}
+                     {{ member.get_role_display | title }}
                 </td>
                 <td class="text-left">
             {{ member.assembly.name | title }}

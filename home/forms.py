@@ -5,7 +5,7 @@ from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from home.models import Member, Assembly, FundraisingProject, PaymentMethod
+from home.models import Member, Assembly, FundraisingProject, PaymentMethod, Payment
 
 
 class RegistrationForm(UserCreationForm):
@@ -177,5 +177,46 @@ class FundraisingProjectForm(forms.ModelForm):
         widgets = {
             "description": forms.Textarea(attrs={"rows": 3}),
             "start_date": forms.DateInput(attrs={"type": "date"}),
+            "end_date": forms.DateInput(attrs={"type": "date"}),
+        }
+
+
+class PaymentForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        queryset = FundraisingProject.objects.none()
+        member_queryset = Member.objects.none()
+        method_queryset = PaymentMethod.objects.none()
+        if "user" in kwargs:
+            user = kwargs.pop("user")
+            queryset = FundraisingProject.objects.filter(
+                Q(active=True) & Q(end_date__gte=timezone.now().date()) &
+                Q(church=user.assembly.church)
+            )
+            method_queryset = PaymentMethod.objects.filter(
+                Q(active=True)&
+                Q(church=user.assembly.church)
+            )
+            member_queryset = Member.objects.filter(
+                Q(is_active=True) &
+                Q(assembly__church=user.assembly.church)
+            )
+
+        super().__init__(*args, **kwargs)
+        self.fields["funderRaisingProject"] = forms.ModelChoiceField(queryset=queryset, required=False, label="Fundraising Project")
+        self.fields["member"] = forms.ModelChoiceField(queryset=member_queryset, label="Member")
+        self.fields["payment_method"] = forms.ModelChoiceField(queryset=method_queryset, label="Payment Method")
+
+    def clean(self):
+        data = super().clean()
+        payment_type = data.get("type")
+        funderRaisingProject = data.get("funderRaisingProject")
+        if payment_type == "Fundraising Contribution" and funderRaisingProject in [None, ""] :
+            raise forms.ValidationError({"funderRaisingProject": "Select a Fundraising Project"})
+
+    class Meta:
+        model = Payment
+        fields = "__all__"
+        widgets = {
+            "date": forms.DateInput(attrs={"type": "date"}),
             "end_date": forms.DateInput(attrs={"type": "date"}),
         }

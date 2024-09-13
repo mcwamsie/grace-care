@@ -1,0 +1,51 @@
+{% if not object_list.count %}
+    {% include "components/misc/empty-state.html" with title="No Fundraising project records yet" %}
+{% else %}
+    <table class="w-full">
+        <thead class="text-xs font-bold text-gray-700 uppercase">
+        <tr class="sticky top-0 bg-paper">
+            <th scope="col">Member</th>
+            <th scope="col">Type</th>
+            <th scope="col">Payment Method</th>
+            <th scope="col">Amount</th>
+            <th scope="col">Date</th>
+            <th scope="col">Project</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for payment in object_list %}
+            <tr class="bg-white border-b hover:bg-gray-50">
+                <th scope="row">
+                    <div class="flex flex-col text-left">
+                  <span class="font-bold text-gray-900">
+                    {{ payment.member  | truncatechars:30| title }}
+                  </span>
+                    </div>
+                </th>
+                <td class="text-left">
+                    {{ payment.get_type_display | truncatechars:50| upper }}
+                </td>
+                <td class="text-left">
+                    
+                        {{ payment.payment_method.name | upper }}
+                </td>
+                <td class="text-right">
+                    {% spaceless %}{{ payment.payment_method.currency }}
+                        {{ payment.amount | floatformat:"2g" }}{% endspaceless %}
+                </td>
+                <td class="text-right">
+                    {% spaceless %}{{ payment.date | date:"d, M, Y" }}{% endspaceless %}
+                </td>
+            {% if payment.fundraising_contribution %}
+            	<td class="text-left">
+                    {{ payment.fundraising_contribution.project.title | title }}
+                </td>
+                {% else %}
+                <td class="text-center">----</td>
+            {% endif %} 
+            
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
