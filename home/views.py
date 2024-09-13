@@ -115,6 +115,8 @@ class UserPasswordResetView(PasswordResetView):
     template_name = 'accounts/password_reset.html'
     form_class = UserPasswordResetForm
 
+    #def form_valid(self, form):
+
 
 class UserPasswordResetConfirmView(PasswordResetConfirmView):
     template_name = 'accounts/password_reset_confirm.html'

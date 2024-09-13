@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm, UsernameField, \
     PasswordResetForm, SetPasswordForm
+from django.contrib.auth.models import User
 from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -67,19 +68,26 @@ class LoginForm(AuthenticationForm):
 
 class UserPasswordResetForm(PasswordResetForm):
     email = forms.EmailField(widget=forms.EmailInput(attrs={
-        'class': 'focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow',
         'placeholder': 'Email'
     }))
+
+    def clean(self):
+        data = super().clean()
+        email = data.get("email")
+        if email:
+            if not Member.objects.filter(email=email).exists():
+                raise forms.ValidationError({"email": "Email is not registered"})
+
 
 
 class UserSetPasswordForm(SetPasswordForm):
     new_password1 = forms.CharField(max_length=50, widget=forms.PasswordInput(attrs={
-        'class': 'focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow',
-        'placeholder': 'New Password'
+        'placeholder': 'New Password',
+                       "autocomplete": "new-password"
     }), label="New Password")
     new_password2 = forms.CharField(max_length=50, widget=forms.PasswordInput(attrs={
-        'class': 'focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 transition-all focus:border-fuchsia-300 focus:outline-none focus:transition-shadow',
-        'placeholder': 'Confirm New Password'
+        'placeholder': 'Confirm New Password',
+        "autocomplete": "new-password"
     }), label="Confirm New Password")
 
 
