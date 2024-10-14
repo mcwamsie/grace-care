@@ -170,7 +170,7 @@ STATICFILES_DIRS = [
 ]
 MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
 
-if not DEBUG:
+if DEBUG:
 
     STORAGES = {
         "staticfiles": {
