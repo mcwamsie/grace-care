@@ -174,7 +174,7 @@ if DEBUG:
 
     STORAGES = {
         "staticfiles": {
-            "BACKEND": "django.core.files.storage.FileSystemStorage",
+            "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
         },
         "default": {
             "BACKEND": "django.core.files.storage.FileSystemStorage",
@@ -194,7 +194,7 @@ else:
             "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
         },
         "staticfiles": {
-            "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+            "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
         },
     }
 
