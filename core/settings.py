@@ -188,7 +188,6 @@ else:
     AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME')  # Optional
     AWS_S3_FILE_OVERWRITE = False
     AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com"
-
     STORAGES = {
         "default": {
             "BACKEND": "storages.backends.s3boto3.S3StaticStorage",
@@ -197,12 +196,6 @@ else:
             "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
         },
     }
-
-#if not DEBUG:
-#    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -214,10 +207,6 @@ AUTH_USER_MODEL = 'home.Member'
 PHONENUMBER_DEFAULT_REGION = "ZW"
 PAGE_SIZE = 16
 
-# EMAIL_HOST = "smtp.mailgun.org"
-# EMAIL_PORT = int(587)
-# EMAIL_HOST_USER = "postmaster@sandbox487681b9998e4bf7a115d02d72453b75.mailgun.org"
-# EMAIL_HOST_PASSWORD = "9ec543c86ee08064c8c49180ae1df226-826eddfb-c45eb39e"
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.getenv('EMAIL_HOST', None)
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', None)
