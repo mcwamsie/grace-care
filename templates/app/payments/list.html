@@ -16,7 +16,9 @@
 {% endblock %}
 {% block title %}payments{% endblock %}
 {% block modals %}
+     {% if request.user.role != "member" %}
     {% include "partials/payments/list/modal.html" with object=None modal_id="new-modal" modal_title="New Payment" %}
+{% endif %}
 {% endblock %}
 {% block styles %}
     {% include "layouts/plugins/jquery.html" %}

@@ -52,12 +52,17 @@ class DashboardView(AccessRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['members'] = Member.objects.filter(Q(assembly__church=self.request.user.assembly.church)).count()
-        context['assemblies'] = Assembly.objects.filter(Q(church=self.request.user.assembly.church)).count()
-        context['projects'] = FundraisingProject.objects.filter(Q(church=self.request.user.assembly.church)).count()
-        context['fundraisingProjects'] = FundraisingProject.objects.filter(Q(church=self.request.user.assembly.church))
-        context['methods'] = PaymentMethod.objects.filter(Q(church=self.request.user.assembly.church))
-        return context
+        if self.request.user.role == "admin":
+            context['members'] = Member.objects.filter(Q(assembly__church=self.request.user.assembly.church)).count()
+            context['assemblies'] = Assembly.objects.filter(Q(church=self.request.user.assembly.church)).count()
+            context['projects'] = FundraisingProject.objects.filter(Q(church=self.request.user.assembly.church)).count()
+            context['fundraisingProjects'] = FundraisingProject.objects.filter(Q(church=self.request.user.assembly.church))
+            context['methods'] = PaymentMethod.objects.filter(Q(church=self.request.user.assembly.church))
+            return context
+        else:
+            context['methods'] = PaymentMethod.objects.filter(Q(church=self.request.user.assembly.church))
+            return context
+
 
 
 @login_required(login_url="/accounts/login/")
@@ -502,7 +507,7 @@ class PaymentListView(AccessRequiredMixin, ListView, SearchFilter):
     template_name = "app/payments/list.html"
     paginate_by = settings.PAGE_SIZE
     paginator_class = Paginator
-    required_roles = ["admin", "cashier"]
+    required_roles = ["admin", "cashier", "member"]
     search_fields = ["member__first_name", "member__last_name"]
     total_count = 0
 
@@ -510,6 +515,12 @@ class PaymentListView(AccessRequiredMixin, ListView, SearchFilter):
         queryset = super().get_queryset().filter(
             Q(member__assembly__church=self.request.user.assembly.church)
         )
+
+        if self.request.user.role == "member":
+            queryset = super().get_queryset().filter(
+                Q(member=self.request.user)
+            )
+
         self.total_count = queryset.count()
         queryset = self.filter_queryset_here(request=self.request, queryset=queryset)
         return queryset

@@ -2,7 +2,8 @@
 {% load static %}
 {% block title %}Dashboard{% endblock %}
 {% block content  %}
-    <div class="flex-grow gap-4 lg:gap-0 pr-2 pt-2 flex flex-col max-h-full max-w-full overflow-y-auto">
+    {% if request.user.role == "admin" %}
+    	 <div class="flex-grow gap-4 lg:gap-0 pr-2 pt-2 flex flex-col max-h-full max-w-full overflow-y-auto">
       <div class="w-full">
     <!-- row 1 -->
     <div class="flex flex-wrap -mx-3">
@@ -178,4 +179,13 @@
    
   </div>
     </div>
+        {% else %}
+        <div class="flex flex-col py-4">
+            <div>
+                <h1 class="text-4xl font-bold">Welcome, {{ request.user.first_name }} !</h1>
+            </div>
+        </div>
+        
+    {% endif %} 
+   
 {% endblock %}

@@ -69,20 +69,20 @@
             </ul>
         </div>
 
-        <button type="button" data-modal-show="new-modal" data-modal-target="new-modal"
-                class="text-white justify-center bg-blue-700 flex items-center hover:bg-blue-800 focus:ring-2 focus:ring-offset-2 focus:ring-blue-800 font-medium rounded-sm shadow-sm text-sm md:px-4 px-2 h-8 focus:outline-none gap-2">
-            <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                 fill="none" viewBox="0 0 24 24">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M5 12h14m-7 7V5"></path>
-            </svg>
-            <span class="font-bold">
+        {% if request.user.role != "member" %}
+            <button type="button" data-modal-show="new-modal" data-modal-target="new-modal"
+                    class="text-white justify-center bg-blue-700 flex items-center hover:bg-blue-800 focus:ring-2 focus:ring-offset-2 focus:ring-blue-800 font-medium rounded-sm shadow-sm text-sm md:px-4 px-2 h-8 focus:outline-none gap-2">
+                <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                     fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M5 12h14m-7 7V5"></path>
+                </svg>
+                <span class="font-bold">
             New <span class="mr-2 hidden sm:inline">Payment</span>
 
             </span>
-        </button>
-
-
+            </button>
+        {% endif %}
     </div>
 
 

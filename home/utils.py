@@ -2,6 +2,7 @@ import datetime
 import json
 
 import month
+from django.contrib.auth import logout
 from django.contrib.auth.mixins import AccessMixin
 from django.db.models import Q
 from django.shortcuts import redirect
@@ -480,8 +481,9 @@ class AccessRequiredMixin(AccessMixin):
     """Verify that the current user is authenticated."""
 
     def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return self.handle_no_permission()
+        if not request.user.is_authenticated or not request.user.assembly:
+            logout(request)
+            return redirect("login")
 
         if request.user.is_superuser or request.user.is_staff:
             messages.error(request, "Admin user are not allowed to access this page.")
