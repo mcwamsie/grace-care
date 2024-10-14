@@ -503,6 +503,7 @@ def calculateContributions(member: Member, update=False):
 
     if latestSubscription and not update:
         startingMonth = latestSubscription.subscription_month + 1
+
     subscriptionFee = member.assembly.church.monthlySubscriptionFee
     currentMonth = month.Month(now.year, now.month)
 

@@ -21,6 +21,7 @@ def send_welcome_email_to_user(sender, instance, created, **kwargs):
         # Set the password for the user
         #instance.set_password(random_password)
         #instance.save()
-        calculateContributions(instance)
+        if instance.assembly:
+            calculateContributions(instance)
         # Send the welcome email with the random password
         #send_welcome_email(instance.email, instance.first_name, random_password, church)
