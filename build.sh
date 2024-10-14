@@ -8,8 +8,6 @@ pip install -r requirements.txt
 
 mkdir /opt/render/project/src/mediafiles
 
-python manage.py makemigrations
-
 # running migrations
 python manage.py migrate
 

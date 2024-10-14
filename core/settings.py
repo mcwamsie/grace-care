@@ -193,3 +193,5 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', None)
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', None)
 EMAIL_PORT = os.getenv('EMAIL_PORT', None)
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', None)
+
+WSGI_APPLICATION = 'core.wsgi.app'
