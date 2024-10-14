@@ -174,7 +174,7 @@ if DEBUG:
 
     STORAGES = {
         "staticfiles": {
-            "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
         },
         "default": {
             "BACKEND": "django.core.files.storage.FileSystemStorage",
