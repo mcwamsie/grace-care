@@ -168,9 +168,10 @@ MEDIA_URL = '/media/'
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
 
 if not DEBUG:
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
+
     STORAGES = {
         "staticfiles": {
             "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",

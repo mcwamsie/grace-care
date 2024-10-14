@@ -20,8 +20,11 @@ from django.conf.urls.static import static
 from core import settings
 
 urlpatterns = [
-                  path('', include('home.urls')),
-                  path("admin/", admin.site.urls),
-                  # path("", include('admin_datta.urls'))
-              ] + static(
-    settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path('', include('home.urls')),
+    path("admin/", admin.site.urls),
+    # path("", include('admin_datta.urls'))
+]
+
+if settings.DEBUG:
+    # In development, Django will serve static and media files via these URLs.
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
